@@ -1,0 +1,16 @@
+﻿@inherits WorksWebBlazorComponent
+
+        <Indicator IndicatorContext="@NameContext">
+            <ErrorContent Context="t">
+                <p>Error: @t.Exception.Message</p>
+                <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+            </ErrorContent>
+            <ChildContent>
+                @ChildContent
+              
+            </ChildContent>
+        </Indicator>
+ @code
+{
+     [Parameter] public string NameContext { get; set; } = "on-indicator-context";
+}

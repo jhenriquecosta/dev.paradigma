@@ -1,0 +1,58 @@
+﻿@page "/webs/controls/inputtext"
+@using Syncfusion.Blazor.Inputs
+
+<div class="e-float-input @(TextClass) e-success">
+    <input type="text" @onfocus="@Focus" @onblur="@Blur" required />
+    <span class="e-float-line"></span>
+    <label class="e-float-text">Success</label>
+</div>
+<div class="e-float-input @(FloatTextClass) e-warning">
+    <input type="text" @onfocus="@FlaotFocus" @onblur="@FloatBlur" required />
+    <span class="e-float-line"></span>
+    <label class="e-float-text">Warning</label>
+</div>
+
+<div class="e-input-group e-control-wrapper e-control-container e-flat e-float-input e-valid-input" style="width:;" _bl_2587a860-c541-4d1d-8715-f8891cdd829d="">
+    <input id="textbox-4b3f5206-5bda-47a3-9bb9-8230399e7f40" class="e-control e-textbox e-lib" name="textbox-4b3f5206-5bda-47a3-9bb9-8230399e7f40" role="textbox" tabindex="0" type="text" aria-labelledby="label_textbox-4b3f5206-5bda-47a3-9bb9-8230399e7f40" autocomplete="on" aria-disabled="false" _bl_def02128-793a-4ff9-b5c3-b43a6687b3b7="">
+    <span class="e-float-line"></span>
+    <label class="e-float-text e-label-top" id="label_textbox-4b3f5206-5bda-47a3-9bb9-8230399e7f4" for="textbox-4b3f5206-5bda-47a3-9bb9-8230399e7f40">Cidade</label>
+    <span class="e-clear-icon e-clear-icon-hide" aria-label="close" role="button" _bl_2255dbd5-0e71-4ce9-8f90-ed2191c2e615=""></span>
+</div>
+
+
+@code {
+    public string FocusClass { get; set; } = " e-input-focus";
+    public string TextClass { get; set; } = "e-input-group";
+    public string FloatTextClass { get; set; } = "e-input-group";
+    public void Focus(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
+    {
+        this.TextClass = this.TextClass + FocusClass;
+        StateHasChanged();
+    }
+
+    public void FlaotFocus(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
+    {
+        this.FloatTextClass = this.FloatTextClass + FocusClass;
+        StateHasChanged();
+    }
+
+    public void Blur(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
+    {
+        if (this.TextClass.Contains(FocusClass))
+        {
+            this.TextClass = this.TextClass.Replace(FocusClass, "");
+        }
+        StateHasChanged();
+    }
+
+    public void FloatBlur(Microsoft.AspNetCore.Components.Web.FocusEventArgs args)
+    {
+        if (this.FloatTextClass.Contains(FocusClass))
+        {
+            this.FloatTextClass = this.FloatTextClass.Replace(FocusClass, "");
+        }
+        StateHasChanged();
+    }
+}
+
+ 

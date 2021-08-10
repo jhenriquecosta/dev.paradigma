@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.2.3.0" Ref="0" ControlType="Works.ConsoleApp.Reports.ProductReport, Works.ConsoleApp.Reports, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Name="ReportTemp" Margins="75, 75, 75, 75" PageWidth="850" PageHeight="1100" Version="20.2" DataMember="Items">
+  <FormattingRuleSheet>
+    <Item1 Ref="1" Condition="[Items.Price] == 0">
+      <Formatting Ref="2" BorderStyle="Inset" ForeColor="Transparent" StringFormat="Near;Near;0;None;Character;Default" />
+    </Item1>
+  </FormattingRuleSheet>
+  <Bands>
+    <Item1 Ref="3" ControlType="ReportHeaderBand" HeightF="2">
+      <Controls>
+        <Item1 Ref="4" ControlType="XRTable" AnchorHorizontal="Both" SizeF="700,2" LocationFloat="0,0">
+          <Rows>
+            <Item1 Ref="5" ControlType="XRTableRow" Weight="1">
+              <Cells>
+                <Item1 Ref="6" ControlType="XRTableCell" Weight="0.2" CanShrink="true" Text="TESTE" TextAlignment="MiddleLeft" Font="Microsoft Sans Serif, 0.22in" ForeColor="Gray" Padding="2,2,2,2,96" />
+                <Item2 Ref="7" ControlType="XRTableCell" Weight="0.2" CanShrink="true" Text="Report example" TextAlignment="MiddleRight" Font="Microsoft Sans Serif, 0.18in" ForeColor="Gray" Padding="2,2,2,2,96" />
+              </Cells>
+            </Item1>
+            <Item2 Ref="8" ControlType="XRTableRow" Weight="1">
+              <Cells>
+                <Item1 Ref="9" ControlType="XRTableCell" Weight="0.2" CanShrink="true" TextAlignment="MiddleLeft" Font="Microsoft Sans Serif, 0.1in" ForeColor="DimGray" Padding="2,2,2,6,96" />
+                <Item2 Ref="10" ControlType="XRTableCell" Weight="0.2" CanShrink="true" TextAlignment="MiddleRight" Font="Microsoft Sans Serif, 0.1in" ForeColor="DimGray" Padding="2,2,2,6,96" />
+              </Cells>
+            </Item2>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item1>
+    <Item2 Ref="11" ControlType="PageHeaderBand" HeightF="2">
+      <Controls>
+        <Item1 Ref="12" ControlType="XRTable" AnchorHorizontal="Both" TextAlignment="BottomLeft" SizeF="700,2" LocationFloat="0,0" Font="Microsoft Sans Serif, 0.09in" ForeColor="DimGray" BackColor="Transparent" Padding="2,2,1,1,96" BorderColor="LightGray" Borders="Bottom" BorderWidth="0.5" BorderDashStyle="Solid">
+          <Rows>
+            <Item1 Ref="13" ControlType="XRTableRow" Weight="1">
+              <Cells>
+                <Item1 Ref="14" ControlType="XRTableCell" Weight="1" Text="Id" />
+                <Item2 Ref="15" ControlType="XRTableCell" Weight="1.5" Text="Name" />
+                <Item3 Ref="16" ControlType="XRTableCell" Weight="1.5" Text="Description" />
+                <Item4 Ref="17" ControlType="XRTableCell" Weight="1.5" Text="Preco" TextAlignment="BottomRight" />
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item2>
+    <Item3 Ref="18" ControlType="DetailBand" HeightF="2">
+      <Controls>
+        <Item1 Ref="19" ControlType="XRTable" AnchorHorizontal="Both" TextAlignment="MiddleLeft" SizeF="700,2" LocationFloat="0,0" Font="Microsoft Sans Serif, 0.09in" ForeColor="255,51,51,51" BackColor="Transparent" Padding="2,2,1,1,96" BorderColor="LightGray" Borders="Bottom" BorderWidth="0.5" BorderDashStyle="DashDot">
+          <Rows>
+            <Item1 Ref="20" ControlType="XRTableRow" Weight="1">
+              <Cells>
+                <Item1 Ref="21" ControlType="XRTableCell" Name="fieldId" Weight="1">
+                  <DataBindings>
+                    <Item1 Ref="22" PropertyName="Text" DataMember="Items.Id" />
+                  </DataBindings>
+                </Item1>
+                <Item2 Ref="23" ControlType="XRTableCell" Name="fieldName" Weight="1.5">
+                  <DataBindings>
+                    <Item1 Ref="24" PropertyName="Text" DataMember="Items.Name" />
+                  </DataBindings>
+                </Item2>
+                <Item3 Ref="25" ControlType="XRTableCell" Name="fieldDescription" Weight="1.5">
+                  <DataBindings>
+                    <Item1 Ref="26" PropertyName="Text" DataMember="Items.Description" />
+                  </DataBindings>
+                </Item3>
+                <Item4 Ref="27" ControlType="XRTableCell" Name="fieldPrice" Weight="1.5" TextAlignment="MiddleRight">
+                  <FormattingRuleLinks>
+                    <Item1 Ref="28" Value="#Ref-1" />
+                  </FormattingRuleLinks>
+                  <DataBindings>
+                    <Item1 Ref="29" FormatString="{0:C}" PropertyName="Text" DataMember="Items.Price" />
+                  </DataBindings>
+                </Item4>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item3>
+    <Item4 Ref="30" ControlType="GroupHeaderBand" RepeatEveryPage="true" GroupUnion="WithFirstDetail" HeightF="2" KeepTogether="true">
+      <GroupFields>
+        <Item1 Ref="31" FieldName="Name" />
+      </GroupFields>
+      <Controls>
+        <Item1 Ref="32" ControlType="XRLabel" CanShrink="true" ProcessNullValues="Suppress" AnchorHorizontal="Both" TextAlignment="MiddleLeft" SizeF="700,2" LocationFloat="0,0" Font="Microsoft Sans Serif, 0.14in, style=Bold" ForeColor="Gray" BackColor="Transparent" Padding="2,2,4,2,100">
+          <DataBindings>
+            <Item1 Ref="33" PropertyName="Text" DataMember="Items.Name" />
+          </DataBindings>
+        </Item1>
+      </Controls>
+    </Item4>
+    <Item5 Ref="34" ControlType="GroupFooterBand" GroupUnion="WithLastDetail" HeightF="2" KeepTogether="true">
+      <Controls>
+        <Item1 Ref="35" ControlType="XRTable" AnchorHorizontal="Both" TextAlignment="MiddleLeft" SizeF="700,2" LocationFloat="0,0" Font="Microsoft Sans Serif, 0.09in" ForeColor="255,51,51,51" BackColor="Transparent" Padding="2,2,1,1,96" BorderColor="LightGray" Borders="Bottom" BorderWidth="0.5" BorderDashStyle="DashDot">
+          <Rows>
+            <Item1 Ref="36" ControlType="XRTableRow" Weight="1">
+              <Cells>
+                <Item1 Ref="37" ControlType="XRTableCell" Weight="9" TextAlignment="MiddleLeft">
+                  <Summary Ref="38" FormatString="Total count: {0:D}" Running="Group" Func="Count" IgnoreNullValues="true" />
+                  <DataBindings>
+                    <Item1 Ref="39" FormatString="Total count: {0:D}" PropertyName="Text" DataMember="Items.Name" />
+                  </DataBindings>
+                </Item1>
+                <Item2 Ref="40" ControlType="XRTableCell" Weight="1.5" TextAlignment="MiddleRight">
+                  <Summary Ref="41" FormatString="{0:C}" Running="Group" IgnoreNullValues="true" />
+                  <DataBindings>
+                    <Item1 Ref="42" FormatString="{0:C}" PropertyName="Text" DataMember="Items.Price" />
+                  </DataBindings>
+                </Item2>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item5>
+    <Item6 Ref="43" ControlType="BottomMarginBand" HeightF="75">
+      <Controls>
+        <Item1 Ref="44" ControlType="XRPageInfo" TextFormatString="Page {0} of {1}" AnchorHorizontal="Both" TextAlignment="MiddleRight" SizeF="700,20" LocationFloat="0,0" Font="Microsoft Sans Serif, 0.08in, style=Italic" ForeColor="Gray" Padding="4,4,0,0,100" />
+      </Controls>
+    </Item6>
+  </Bands>
+  <ReportPrintOptions Ref="45" DetailCountOnEmptyDataSource="0" />
+</XtraReportsLayoutSerializer>

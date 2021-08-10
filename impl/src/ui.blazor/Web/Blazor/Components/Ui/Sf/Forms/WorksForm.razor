@@ -1,0 +1,33 @@
+﻿@inherits BaseWorkForm
+<form @onsubmit="@OnFormSubmit" @onsubmit:preventDefault="true">
+    <Row>
+        <Column Margin="Margin.Is1.OnAll">
+            @ChildContent
+        </Column>
+    </Row>
+    <Row>
+        <Column Padding="Padding.Is1.OnAll">
+            <div class="e-footer-content">
+                <div class="button-container">
+                    @Buttons
+                    @*<button type="button" class="e-btn e-normal" @onclick="OnResetButtonClick">@CloseButtonText</button>*@
+                    <SfButton @ref="SfButtonExit" @onclick="@OnResetButtonClick" CssClass="e-btn e-normal" IconCss="mdi mdi-close-circle mdi-18px">@CloseButtonText</SfButton>
+
+                    @if (PageModelAction == WorksPageModelAction.Delete)
+                    {
+                        @*<button type="button" class="e-btn e-warning" @onclick="@(() => OnDeleteClick.InvokeAsync(null))">@DeleteButtonText</button>*@
+                        <SfButton Disabled="@DeleteButtonDisabled" @ref="SfButtonDelete" @onclick="@(() => OnDeleteClick.InvokeAsync(null))" CssClass="e-btn e-warning" IconCss="mdi mdi-delete mdi-18px">@DeleteButtonText</SfButton>
+
+                    }
+                    else
+                    {
+                        @*<button type="button" class="e-btn e-primary" @onclick="@(() => OnSaveClick.InvokeAsync(null))">@SaveButtonText</button>*@
+                        <SfButton Disabled="@SaveButtonDisabled" @ref="SfButtonSave" @onclick="@(() => OnSaveClick.InvokeAsync(null))" CssClass="e-btn e-primary" IconCss="mdi mdi-content-save mdi-18px">@SaveButtonText</SfButton>
+
+                    }
+                </div>
+            </div>
+        </Column>
+    </Row>
+    
+</form>

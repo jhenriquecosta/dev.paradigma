@@ -1,0 +1,22 @@
+﻿@page "/entities/category"
+@inherits WorksPageComponent
+@*@ContainerComponent
+@EditFormComponent()*@
+
+<Indicator IndicatorContext="@IndicatorContext">
+    <ErrorContent Context="t">
+        <p>Error: @t.Exception.Message</p>
+        <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+    </ErrorContent>
+    <ChildContent>
+        <WorksPageCrudComponentDto Title="Categoria" SubTitle="Adicionar/Alterar/Excluir" TEntity="Category" TModel="CategoryDto"/>
+    </ChildContent>
+</Indicator>
+
+@code
+{
+
+}
+
+
+

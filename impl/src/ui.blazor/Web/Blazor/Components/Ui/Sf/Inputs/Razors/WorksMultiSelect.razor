@@ -1,0 +1,111 @@
+﻿@typeparam TEntity
+@using JetBrains.Annotations
+@using EventArgs = System.EventArgs
+@using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs
+@inherits WorksWebBlazorComponent
+
+<SfMultiSelect
+               @ref="@InternalMultiSelect"
+               Value="@Value"
+               Locale="@Locale" 
+               AllowFiltering=true
+               IgnoreAccent=true
+               CssClass="@CssClass"
+               FloatLabelType="@FloatLabelType.Auto"
+               Placeholder="@Caption"
+               TValue="int[]"
+               Width="@Width"
+               Mode="VisualMode.CheckBox"
+               Readonly="@(!AllowEdit)"
+               DataSource="@DataSource">
+    <MultiSelectEvents
+        TValue="int[]" 
+        ValueChange="@(e=>OnValueChanged(e))">
+    </MultiSelectEvents>
+    <MultiSelectFieldSettings
+        Text="@FieldText"
+        Value="@FieldValue">
+    </MultiSelectFieldSettings>
+</SfMultiSelect>
+
+
+@code
+{
+    
+    protected bool isRender = false;
+    internal IList<TEntity> Entities = new List<TEntity>();
+    protected SfMultiSelect<int[]> InternalMultiSelect { get; set; }
+    [Parameter] public bool AllowFiltering { get; set; } = true;
+    [Parameter] public bool UseEntities { get; set; } = false;
+    [Parameter] public bool IgnoreAccent { get; set; } = true;
+    [Parameter] public string FieldText { get; set; } = "FieldText";
+    [Parameter] public string FieldValue { get; set; } = "FieldValue";
+    [Parameter] public IEnumerable<ComboBoxItemDto> DataSource { get; set; }
+
+    [Parameter] public EventCallback<IEnumerable<TEntity>> ValueChanged { get; set; }
+    [Parameter] public EventCallback<IEnumerable<TEntity>> ValueRemoved { get; set; }
+    [Parameter] public EventCallback<int[]> GetValues { get; set; }
+    [Parameter] public int[] Value { get; set; }
+
+    public SfMultiSelect<int[]> GetInternalControl => InternalMultiSelect;
+
+    public async Task ReloadAsync(IEnumerable<ComboBoxItemDto> dataSource)
+    {
+        await InternalMultiSelect.ShowSpinner();
+        DataSource = dataSource;
+        InternalMultiSelect.Refresh();
+        await InternalMultiSelect.HideSpinner();
+        ShouldRenderize();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Initialize();
+    }
+
+    protected void Initialize()
+    {
+        try
+        {
+
+            base.SetObjectID(this.InternalMultiSelect);
+
+        }
+        catch (Exception ex)
+        {
+            ErrorMessages.Add(ex.Message);
+        }
+    }
+
+    private async Task OnValueChanged(MultiSelectChangeEventArgs<int[]> args)
+    {
+
+        await GetValues.InvokeAsync(args.Value);
+
+
+        if (args.OldValue != null)
+        {
+            Entities = new List<TEntity>();
+            foreach (var id in args.OldValue)
+            {
+                var record = (TEntity)DataSource.FirstOrDefault(f => f.FieldValue == id).FieldData;
+                Entities.Add(record);
+            }
+            await ValueRemoved.InvokeAsync(Entities.AsEnumerable<TEntity>());
+        }
+        if (args.Value != null)
+        {
+            Entities = new List<TEntity>();
+            foreach (var id in args.Value)
+            {
+                var record = (TEntity) DataSource.FirstOrDefault(f => f.FieldValue == id).FieldData;
+                Entities.Add(record);
+            }
+            await ValueChanged.InvokeAsync(Entities.AsEnumerable<TEntity>());
+        }
+
+        StateHasChanged();
+
+    }
+
+}

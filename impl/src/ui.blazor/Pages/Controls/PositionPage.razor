@@ -1,0 +1,77 @@
+﻿@page "/webs/controls/position"
+@inherits WorksPageCrudComponentBase<Person>
+@using Works.Web.Blazor.Components.DataModels.Enums
+
+<WorksContainer IsInitialized="@IsInitialized">
+
+    <WorksPanel Title="@Title" SubTitle="@SubTitle">
+
+
+        <WorksGrid @ref="DataListGrid"
+                   TModel="Person"
+                   AllowButtons="true"
+                   AllowPrint="true"
+                   DataSource="@PageModelList"
+                   OnAdd="@(() => this.OnManager(null, WorksPageModelAction.New))"
+                   OnEdit="@((value) => this.OnManager(value, WorksPageModelAction.Edit))"
+                   OnRemove="@((value) => this.OnManager(value, WorksPageModelAction.Delete))" />
+
+
+    </WorksPanel>
+
+</WorksContainer>
+<WorksModal
+            OnBtnCancelClick="@(() => Hide())"
+            @ref="InternalWorksForm">
+    <WorksForm PageModelAction="@PageModelAction">
+        <ChildContent>
+            <Row>
+                <Column>
+                    <Fields  >
+                        <Field ColumnSize="ColumnSize.Is8.OnDesktop">
+                            <WorksInputText @bind-Value="@PageModelInput.Name" Caption="Nome"></WorksInputText>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+                            <WorksInputText @bind-Value="@PageModelInput.Alias" Caption="Nome"></WorksInputText>
+                        </Field>
+                    </Fields>
+                    <Fields>
+                        <Field ColumnSize="ColumnSize.IsThird.OnDesktop">
+                            <WorksInputDate @bind-Value="@PageModelInput.DateBirth" Caption="DateBirth"></WorksInputDate>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.IsThird.OnDesktop">
+                            <WorksInput TValue="int?" @bind-Value="@PageModelInput.Category" Caption="Category"></WorksInput>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.IsThird.OnDesktop">
+                            <WorksInput TValue="decimal?" @bind-Value="@PageModelInput.Salary" Caption="Salary"></WorksInput>
+                        </Field>
+                    </Fields>
+                    <Field>
+                        <WorksInputText @bind-Value="@PageModelInput.Email" Caption="Email"></WorksInputText>
+                    </Field>
+                
+                </Column>
+            </Row>
+        </ChildContent>
+    </WorksForm>
+</WorksModal>
+
+@code
+{
+    protected string fieldStyle = "margin-bottom: -15px;";
+    protected string fieldEmail = string.Empty;
+    protected WorksModal InternalWorksForm { get; set; }
+    protected void OnManager(Person value, WorksPageModelAction pageAction)
+    {
+        InternalWorksForm.Show();
+    }
+    protected void Hide()
+    {
+        // InternalWorksForm.Hide();
+    }
+    protected void ActionOnBlur(Microsoft.AspNetCore.Components.Web.FocusEventArgs eventArgs)
+    {
+        this.PageModelInput.Email = fieldEmail;
+        StateHasChanged();
+    }
+}

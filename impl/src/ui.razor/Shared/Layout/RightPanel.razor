@@ -1,0 +1,96 @@
+﻿@inject NavigationManager UriHelper;
+@inject AppBlazorService AppBlazorService;
+
+<CascadingValue Value="@this">
+    <div class="@rootClass" id='right-pane'>
+        <div class='sb-desktop-wrapper'>
+            <BreadCrumbComponent @ref="BreadCrumbRef"></BreadCrumbComponent>
+            <ApplicationDescription @ref="ApplicationDescriptionRef" Visible="true">
+                @applicationDescription
+            </ApplicationDescription>
+
+            @*<ApplicationNavigator @ref="ApplicationNavigatorRef" DeviceMode="false"></ApplicationNavigator>*@
+
+            <div>
+                <div class="control-fluid">
+                    @ChildContent
+                </div>
+            </div>
+
+            <ActionDescription @ref="ActionDescriptionRef" Visible="true">
+                @actionDescription
+            </ActionDescription>
+
+            <FooterComponent />
+        </div>
+    </div>
+</CascadingValue>
+
+@code {
+    private int tabSelectedItem { get; set; }
+    private RenderFragment actionDescription { get; set; }
+    private RenderFragment applicationDescription { get; set; }
+    private string rootClass = "sb-right-pane e-view " + AppBlazorUtils.RIGHT_PANE;
+
+
+    protected ActionDescription ActionDescriptionRef { get; set; }
+    protected ApplicationDescription ApplicationDescriptionRef { get; set; }
+
+    [CascadingParameter]
+    protected AppMainLayout Layout { get; set; }
+
+    /// <summary>
+    /// BreadCrumb reference for outside usage.
+    /// </summary>
+    public BreadCrumbComponent BreadCrumbRef { get; set; }
+
+    /// <summary>
+    /// ApplicationNavigator reference for outside usage.
+    /// </summary>
+    //public ApplicationNavigator ApplicationNavigatorRef { get; set; }
+
+    /// <summary>
+    /// Child content of RightPane component.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    /// Refresh action description for current Application.
+    /// </summary>
+    public void RefreshActionDescription(RenderFragment description)
+    {
+        actionDescription = description;
+        ActionDescriptionRef.Refresh();
+    }
+
+    /// <summary>
+    /// Refresh Application description for current Application.
+    /// </summary>
+    public void RefreshApplicationDescription(RenderFragment description)
+    {
+        AppBlazorService.Update(UriHelper);
+        BreadCrumbRef.Refresh(AppBlazorService.ApplicationInfo);
+        applicationDescription = description;
+        ApplicationDescriptionRef.Refresh();
+    }
+
+
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        // Expand or collapse right pane based on the condition.
+        if (this.Layout.LeftPanelRef == null || this.Layout.LeftPanelRef.IsExpanded())
+        {
+            this.rootClass = AppBlazorUtils.RemoveClass(rootClass, AppBlazorUtils.RIGHT_PANE_EXPAND);
+            this.rootClass = AppBlazorUtils.AddClass(rootClass, AppBlazorUtils.RIGHT_PANE_COLLAPSE);
+        }
+        else
+        {
+            this.rootClass = AppBlazorUtils.RemoveClass(rootClass, AppBlazorUtils.RIGHT_PANE_COLLAPSE);
+            this.rootClass = AppBlazorUtils.AddClass(rootClass, AppBlazorUtils.RIGHT_PANE_EXPAND);
+        }
+    }
+}

@@ -1,0 +1,93 @@
+﻿@page "/challenge/salario"
+@inject ILoadingService LoadIndicatorService
+@inject IWorksRepository<Pessoa> Repository
+@inherits WorksForms
+
+<Indicator IndicatorContext="on-init">
+    <ErrorContent Context="t">
+        <p>Error: @t.Exception.Message</p>
+        <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+    </ErrorContent>
+    <ChildContent>
+        <WorksPanel Title="DESAFIO 2" SubTitle="Maiores Salarios">
+            <Fields>
+                <Field ColumnSize="ColumnSize.Is4.OnDesktop.Is4.OnMobile">
+                    <WorksInputText Height="400px" AllowEdit="false" Caption="SQL STATEMENT" Multiline="true" Value="@SqlStatment"></WorksInputText>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile">
+                    <SfGrid DataSource="@DataSource" AllowFiltering="true" AllowSorting="true">
+                        <GridColumns>
+                            <GridColumn Field="Departamento" HeaderText="Departamento" Width="120"></GridColumn>
+                            <GridColumn Field="Pessoa" HeaderText="Pessoa" Width="120"></GridColumn>
+                            <GridColumn Field="Salario" HeaderText="Salario" Format="N2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                </Field>
+            </Fields>
+        </WorksPanel>
+    </ChildContent>
+</Indicator>
+
+
+@code
+{
+    protected IEnumerable<ExpandoObject> DataSource { get; set; }
+    protected string SqlStatment { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+
+        await InitializeAsync();
+        await base.OnInitializedAsync();
+    }
+    protected async Task InitializeAsync()
+    {
+
+        await LoadIndicatorService.StartTaskAsync(async (task) =>
+        {
+            try
+            {
+
+
+                var sql = "select " + Environment.NewLine +
+                    "   d.nome as Departamento," + Environment.NewLine +
+                    "   p.nome as Pessoa," + Environment.NewLine +
+                    "   p.salario as Salario " + Environment.NewLine +
+                    "from" + Environment.NewLine +
+                    "   pessoa p " + Environment.NewLine +
+                    "inner join " + Environment.NewLine +
+                    "   departamento d" + Environment.NewLine +
+                    "       on p.departamento_id = d.id " + Environment.NewLine +
+                    "where " + Environment.NewLine +
+                    "    p.salario = (" + Environment.NewLine +
+                    "        select " + Environment.NewLine +
+                    "            max(salario)" + Environment.NewLine +
+                    "        from " + Environment.NewLine +
+                    "           pessoa" + Environment.NewLine +
+                    "        where " + Environment.NewLine +
+                    "            pessoa.departamento_id = d.id" + Environment.NewLine +
+                    "                ) " + Environment.NewLine +
+                    "group by " + Environment.NewLine +
+                    "d.nome," + Environment.NewLine +
+                    "p.nome," + Environment.NewLine +
+                    "p.salario";
+                DataSource = Repository.SQLQuery(sql).ToExpandoObjects();
+                SqlStatment = sql;
+
+                await Task.Delay(1);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }, "on-init", "Requisitando informações ao servidor...", "Aguarde..");
+
+    }
+
+
+
+}
+
+
+

@@ -1,0 +1,35 @@
+﻿@inherits BaseWorkPanel
+
+<Card Padding="Padding.Is2.OnAll">
+    <CardHeader Padding="Padding.Is1.OnAll">
+        @if (!Title.IsNullOrEmpty())
+        {
+            <CardTitle Size="4">@Title</CardTitle>
+        }
+        @if (!SubTitle.IsNullOrEmpty())
+        {
+            <CardSubtitle Size="3">@SubTitle</CardSubtitle>
+        }
+
+    </CardHeader>
+
+    @if (TopBar != null)
+    {
+        <CardHeader Padding="Padding.Is1.FromBottom">
+
+            @TopBar
+
+        </CardHeader>
+    }
+
+    <CardBody Padding="Padding.Is1.OnAll">
+        @ChildContent
+    </CardBody>
+
+    @if (BottomBar != null)
+    {
+        <CardFooter Padding="Padding.Is1.OnAll">
+            @BottomBar
+        </CardFooter>
+    }
+</Card>

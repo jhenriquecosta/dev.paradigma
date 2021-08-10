@@ -1,0 +1,39 @@
+﻿@if (UseIndicator)
+{
+    <Indicator IndicatorContext="@IndicatorContextName">
+        <ErrorContent Context="t">
+            <p>Error: @t.Exception.Message</p>
+            <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+        </ErrorContent>
+        <ChildContent>
+            <Container Padding="Padding.Is1.OnAll" Fluid="true">
+                        @if (IsInitialized)
+                        {
+                            @ChildContent
+                        }
+                  
+            </Container>
+        </ChildContent>
+    </Indicator>
+}
+else
+{
+    <Container Padding="Padding.Is1.OnAll" Fluid="true">
+          @if (IsInitialized)
+          {
+                    @ChildContent
+          }
+    </Container>
+}
+
+
+@code
+{
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool IsInitialized { get; set; } = true;
+    [Parameter] public bool UseIndicator { get; set; } = true;
+    [Parameter] public string IndicatorContextName { get; set; } = "on-panel-context";
+
+
+}

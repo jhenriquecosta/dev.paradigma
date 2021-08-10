@@ -1,0 +1,10 @@
+﻿@if (ErrorMessages.Count > 0)
+{
+    <Alert Dismisable="true" Color="@Color.Warning">
+        <AlertMessage>ERRO!</AlertMessage>
+        @foreach (var alert in ErrorMessages)
+        {
+          <AlertDescription>@alert</AlertDescription>
+        }
+    </Alert>
+}

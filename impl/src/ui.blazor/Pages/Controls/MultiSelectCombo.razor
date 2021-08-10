@@ -1,0 +1,189 @@
+﻿@using Works.Web.Common.Icons
+@page "/webs/controls/multiselectinput"
+@inject WorksComponentsService WorksCmpService
+@inherits WorksPage
+
+
+<WorksPanel Title="WORKSINPUT - MULTISELECT" SubTitle="Text edit">
+
+    @*<div id="target">Right click/Touch hold to open the ContextMenu </div>
+    <SfContextMenu TValue="MenuItem" Target="#target" Items="@MenuItems" @ref="ContextMenuObj">
+        <MenuEvents TValue="MenuItem" ItemSelected="OnActionItemSelected"></MenuEvents>
+    </SfContextMenu>*@
+    
+    <Fields>
+        <Field ColumnSize="ColumnSize.IsQuarter">
+            <WorksMultiSelect Caption="Multi - Categories - ComboBoxItem"
+                              TEntity="Category"
+                              DataSource="@CategoryLookup"
+                              Value="@CategoryIdList"
+                              OnValueSelected="@((value) => CategoryIdList=value)"
+                              OnMultiValueRemoved="@((value) => CategoryRemovedList=value)"
+                              OnMultiValueSelected="@((value) => GetItems(value))">
+            </WorksMultiSelect>
+        </Field>
+        <Field ColumnSize="ColumnSize.IsQuarter">
+            <WorksInputMultiSelect TValue="int[]"
+                                   Caption="Multi - Categories"
+                                   TItem="Category"
+                                   DataSource="@CategoryList"
+                                   Value="@CategoryIdList"
+                                   ItemID="Id"
+                                   ItemText="Name"
+                                   OnValueSelected="@((value) => CategoryIdList=value)"
+                                   OnMultiValueRemoved="@((value) => CategoryRemovedList=value)"
+                                   OnMultiValueSelected="@((value) => GetItems(value))">
+            </WorksInputMultiSelect>
+        </Field>
+        <Field ColumnSize="ColumnSize.IsQuarter">
+            Items Selecionados: @CategorySelectedList?.Count();
+            <WorksDropDown TValue="int?" TItem="Category" ItemID="Id" ItemText="Name"
+                           Value="@CategorySelected?.Id"
+                           DataSource="@CategorySelectedList"
+                           Caption="ComboBox - Selected">
+            </WorksDropDown>
+
+        </Field>
+        <Field ColumnSize="ColumnSize.IsQuarter">
+            Items Removidos: @CategoryRemovedList?.Count();
+            <WorksDropDown TValue="int?" TItem="Category" ItemID="Id" ItemText="Name"
+                           Value="@CategorySelected?.Id"
+                           DataSource="@CategoryRemovedList"
+                           Caption="ComboBox - Removed">
+            </WorksDropDown>
+        </Field>
+    </Fields>
+
+     
+    <Fields>
+        @if (CategorySelected != null)
+        {
+            <Field ColumnSize="ColumnSize.Is2">
+                <WorksInputInteger Caption="Id" @bind-Value="@CategorySelected.Id"></WorksInputInteger>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is10">
+                <WorksInputText Caption="Name" @bind-Value="@CategorySelected.Name"></WorksInputText>
+            </Field>
+        }
+    </Fields>
+    
+
+</WorksPanel>
+<style>
+    #target {
+        border: 1px dashed;
+        height: 150px;
+        padding: 10px;
+        position: relative;
+        text-align: justify;
+        color: gray;
+        user-select: none;
+    }
+</style>
+
+@code
+{
+
+
+    public string CategoryId;
+    public Query Query = new Query().Select(new List<string> { "CustomerID", "OrderID" }).Take(6).RequiresCount();
+    public class OrderDetails
+    {
+        public int? OrderID { get; set; }
+        public string CustomerID { get; set; }
+        public int? EmployeeID { get; set; }
+        public double? Freight { get; set; }
+        public string ShipCity { get; set; }
+        public bool Verified { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string ShipName { get; set; }
+        public string ShipCountry { get; set; }
+        public DateTime? ShippedDate { get; set; }
+        public string ShipAddress { get; set; }
+    }
+
+    private ElementReference inputElement { get; set; }
+
+    [Inject] IWorksRepository<Category> CategoryRepository { get; set; }
+
+
+    private int[]? CategoryIdList { get; set; } = new int[] {1,5 };
+
+    private object CategoryValue { get; set; } = 0;
+    private Category CategorySelected { get; set; } = new Category();
+    private SfComboBox<string, DropDownData> CategoryComboBoxRef { get; set; }
+    private IEnumerable<ComboBoxItemDto> CategoryLookup { get; set; }
+    private IEnumerable<Category> CategoryList { get; set; }
+    private IEnumerable<Category> CategorySelectedList { get; set; } = new List<Category>();
+    private IEnumerable<Category> CategoryRemovedList { get; set; } = new List<Category>();
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CategorySelected = new Category();
+        CategoryList = CategoryRepository.GetAllList();
+        CategoryLookup = CategoryList.ToComboBoxItem();
+
+    }
+    protected void OnClearComboBox()
+    {
+        CategoryComboBoxRef?.Clear();
+    }
+
+    protected void OnValueChange(Syncfusion.Blazor.DropDowns.ChangeEventArgs<string, OrderDetails> args)
+    {
+        var x = args;
+
+    }
+    protected void OnValueChange(Syncfusion.Blazor.DropDowns.ChangeEventArgs<int?, Category> args)
+    {
+        var x = args;
+        CategoryId = args.Value.ToString();
+        CategorySelected = args.ItemData as Category;
+        StateHasChanged();
+    }
+
+    protected void GetItems(IEnumerable<Category> args)
+    {
+
+        CategorySelectedList = args;
+        StateHasChanged();
+    }
+
+    #region MenuItem
+    SfContextMenu<MenuItem> ContextMenuObj;
+    public List<MenuItem> MenuItems = new List<MenuItem>
+{
+        new MenuItem{ Text="View", Items= new List<MenuItem>{
+        new MenuItem { Text="Large Icons"},
+        new MenuItem { Text="Medium Icons"},
+        new MenuItem { Text="Small Icons"} } },
+        new MenuItem{ Text="Refresh" },
+        new MenuItem{ Text="Paste" },
+        new MenuItem{ Separator=true },
+        new MenuItem{ Text="New" },
+        new MenuItem{ Separator=true},
+        new MenuItem{ Text="Personalize"}
+    };
+    public string[] RemoveItem = new string[] { "Paste" };
+    public List<MenuItem> InsertAfterItem = new List<MenuItem>
+{
+        new MenuItem{Text = "Sort By"}
+    };
+    public List<MenuItem> InsertBeforeItem = new List<MenuItem>
+{
+        new MenuItem{Text = "Display Settings"}
+    };
+    
+    protected async Task OnActionItemSelected(MenuEventArgs<MenuItem> args)
+    {
+        var selectedText = args.Item.Text;
+       await  WorksCmpService.InfoAsync(selectedText);
+    }
+    #endregion
+ }
+
+
+

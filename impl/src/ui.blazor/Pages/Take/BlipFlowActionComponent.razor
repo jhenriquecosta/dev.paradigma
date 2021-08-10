@@ -1,0 +1,57 @@
+﻿@using Works.Helpers.Dto
+@namespace Works.Helpers
+@inherits WorksGridEditBase<BlipExecuteScriptSettingsDto>
+
+ 
+<WorksModal @ref="@InternalModalRef" Caption="Execute Scripts">
+    <ChildContent>
+        <Container Padding="Padding.Is2.OnAll">
+            <Fields>
+                <WorksGrid @ref="DataListGrid"
+                           TModel="BlipExecuteScriptSettingsDto"
+                           AllowButtons ="true"
+                           AllowButtonAdd ="false"
+                           AllowButtonDelete ="false"
+                           ColumnFields="Function,Source,OutputVariable"
+                           DataSource="@PageModelList"
+                           OnAdd="@(() => this.OnPageModelAction(null, WorksPageModelAction.New))"
+                           OnEdit="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Edit))"
+                           OnRemove="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Delete))" />
+            </Fields>
+        </Container>
+    </ChildContent>
+</WorksModal>
+    
+
+    <WorksModalForm @ref="ModalFormMain" Width="600px"
+                    Caption="@GetCaption()"
+                    OnDelete="@(() => OnDeleteAsync(this.PageModelInput))"
+                    OnSave="@(() => OnSaveOrUpdateAsync(this.PageModelInput))">
+
+        <BodyContent>
+
+            <Fields>
+                <Field Class="height: 160px;" Padding="Padding.Is1.OnAll">
+                    <WorksInputText  @bind-Value="@PageModelInput.Source" Caption="Source" Multiline="true"></WorksInputText>
+                </Field>
+            </Fields>
+
+        </BodyContent>
+
+    </WorksModalForm>
+ 
+
+@code
+{
+    public WorksModal InternalModalRef { get; set; }
+    [Parameter] public bool Enabled { get; set; } = false;
+
+    public void Show()
+    {
+        InternalModalRef?.Show();
+    }
+
+}
+
+
+

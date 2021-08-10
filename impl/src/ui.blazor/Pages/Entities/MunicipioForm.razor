@@ -1,0 +1,22 @@
+﻿@page "/entities/municipio"
+@inherits WorksPageComponent
+@*@ContainerComponent
+@EditFormComponent()*@
+
+<Indicator IndicatorContext="@IndicatorContext">
+    <ErrorContent Context="t">
+        <p>Error: @t.Exception.Message</p>
+        <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+    </ErrorContent>
+    <ChildContent>
+        <WorksPageCrudComponentDto Title="Municipio" SubTitle="Adicionar/Alterar/Excluir" TEntity="Municipio" TModel="MunicipioDto"/>
+    </ChildContent>
+</Indicator>
+
+@code
+{
+
+}
+
+
+

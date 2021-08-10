@@ -1,0 +1,9 @@
+﻿@inherits BaseWorkButton
+<SfButton HtmlAttributes="@HtmlAttributes"
+          Content="@Caption"
+          @onclick="@(() => OnClick.InvokeAsync(null))"
+          IconCss="@CssIcon"
+          CssClass="@CssClass"
+          Disabled="@Disable"
+          IsToggle="@IsToogle"
+          IsPrimary="@IsPrimary"></SfButton>

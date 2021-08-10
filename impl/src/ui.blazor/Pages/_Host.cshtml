@@ -1,0 +1,42 @@
+﻿@page "/"
+@using Works
+@using Works.Ui.Blazor.Components.SyncFusion.Infrastructure
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @(await Html.RenderComponentAsync<AppBlazorMetaDataCmp>(RenderMode.ServerPrerendered))
+
+    <base href="~/" />
+    @Html.AddWorksCss()
+    @Html.AddBlazorise()
+    @Html.AddMaterialDesign()
+    @Html.AddMaterialDesignIcon()
+    @Html.AddSyncfusion()
+    @(await Html.RenderComponentAsync<AppBlazorSyncfusionConfigureTheme>(RenderMode.Static))
+
+
+</head>
+<body>
+    <div hidden id="sync-analytics" data-queue="OWS Projects"></div>
+
+    @*<div id="app">
+            <app>
+                @(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered))
+            </app>
+        </div>*@
+
+    <div class="dynamic-resources"></div>
+
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="_content/CurrieTechnologies.Razor.SweetAlert2/sweetAlert2.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+﻿@page "/challenge/treenode"
+@using Syncfusion.Blazor.RichTextEditor
+@using Syncfusion.Blazor.Diagrams
+@inject ILoadingService LoadIndicatorService
+@inject IWorksRepository<Pessoa> Repository
+@inherits WorksForms
+
+
+<Indicator IndicatorContext="on-init">
+    <ErrorContent Context="t">
+        <p>Error: @t.Exception.Message</p>
+        <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+    </ErrorContent>
+    <ChildContent>
+        <WorksPanel Title="Desafio 1" SubTitle="BTS/TreeNode">
+
+            <SfTab @ref="@SfTabRef" CssClass="tab-adaptive" LoadOn="ContentLoad.Demand">
+                <TabItems>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="RESULTADO"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+
+                            <table style="width:100%">
+                                <tr>
+                                    <th>Resultado 1</th>
+                                    <th>Resultado 2</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @((MarkupString)Resultado1)
+                                    </td>
+                                    <td>
+                                        @((MarkupString)Resultado2)
+                                    </td>
+
+
+                                </tr>
+                            </table>
+
+
+                        </ContentTemplate>
+                    </TabItem>
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text="ORGANOGRAMA"></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <div class="content-wrapper">
+                                <SfDiagram @ref="@Diagram" ID="diagram" Height="499px" Layout="@LayoutValue" Tool="@DiagramTools.ZoomPan" ConnectorDefaults="@ConnectorDefault" NodeDefaults="@NodeDefaults">
+                                    <DiagramDataSource Id="Name" ParentId="Category" DataSource="@DataSource">
+                                        <DiagramDataMapSettings>
+                                            <DiagramDataMapSetting Property="Shape.TextContent" Field="Name"></DiagramDataMapSetting>
+                                            <DiagramDataMapSetting Property="Style.StrokeColor" Field="FillColor"></DiagramDataMapSetting>
+                                            <DiagramDataMapSetting Property="Style.Fill" Field="FillColor"></DiagramDataMapSetting>
+                                        </DiagramDataMapSettings>
+                                    </DiagramDataSource>
+                                    <DiagramSnapSettings Constraints="@SnapConstraints.None"></DiagramSnapSettings>
+                                    <DiagramPageSettings>
+                                        <DiagramFitOptions CanFit="true" Mode="FitModes.Width"></DiagramFitOptions>
+                                    </DiagramPageSettings>
+                                </SfDiagram>
+
+                            </div>
+                        </ContentTemplate>
+                    </TabItem>
+
+                </TabItems>
+            </SfTab>
+        </WorksPanel>
+    </ChildContent>
+</Indicator>
+
+
+@code
+{
+
+    StringBuilder builder = new StringBuilder();
+    SfDiagram Diagram;
+    protected SfTab SfTabRef { get; set; }
+    protected MarkupString Resultado1 { get; set; }
+    protected MarkupString Resultado2 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeAsync();
+        await base.OnInitializedAsync();
+    }
+    protected async Task InitializeAsync()
+    {
+        await LoadIndicatorService.StartTaskAsync(async (task) =>
+        {
+            try
+            {
+
+                LayoutValue = new DiagramLayout()
+                {
+                    Type = LayoutType.HierarchicalTree,
+                    VerticalSpacing = 30,
+                    HorizontalSpacing = 30,
+                    EnableAnimation = true,
+                    LayoutInfo = this.LayoutInfo
+
+                };
+                Organograma();
+                Challenge();
+
+                await Task.Delay(1);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }, "on-init", "Requisitando informações ao servidor...", "Aguarde..");
+
+    }
+    public MarkupString GetContent(string value)
+    {
+        return (MarkupString)$"<p>{value.Replace(Environment.NewLine, "<br>")}</p>";
+    }
+
+    public void Challenge()
+    {
+        var tree = new TreeNode();
+        tree.Sort = true;
+        tree.Write = Write;
+        var data1 = new object[,] { { "A", "B" }, { "A", "C" }, { "B", "G" }, { "C", "H" }, { "E", "F" }, { "B", "D" }, { "C", "E" } };
+        var data2 = new object[,] { { "B", "D" }, { "D", "E" }, { "A", "B" }, { "C", "F" }, { "E", "G" }, { "A", "C" } };
+        tree.Add(data1);
+        tree.Draw();
+        Resultado1 = GetContent(builder.ToString());
+        builder = new StringBuilder();
+        tree.Draw(false);
+        Resultado2 = GetContent(builder.ToString());
+       // tree.PrintConsoleOut();
+    }
+
+    public void Write(string value)
+    {
+        builder.Append(value);
+    }
+
+
+    #region ORGANOGRAMA
+
+    public void Organograma()
+    {
+        var tree = new TreeNode();
+        tree.Sort = false;
+        var data3 = new object[,] { { "PRESIDENCIA", "GERENCIA" }, { "GERENCIA", "VENDAS" }, { "GERENCIA", "ADM" }, { "ADM", "TI" }, { "ADM", "RH" }, { "VENDAS", "VENDAS ONLINE" }, { "VENDAS", "PEÇAS" } };
+        tree.Add(data3);
+        var nodes = tree.GetNodes();
+        foreach(var node in nodes)
+        {
+
+            var category = tree.GetAncestral(node)?.Text;
+            var item = new HierarchicalDetails() { Name = node.Text, Category = category, FillColor = "#659be5" };
+            DataSource.Add(item);
+        }
+    }
+
+    TreeInfo LayoutInfo = new TreeInfo()
+    {
+        CanEnableSubTree = true,
+        Orientation = SubTreeOrientation.Horizontal
+
+    };
+    DiagramLayout LayoutValue = new DiagramLayout() { };
+
+
+
+    DiagramConnector ConnectorDefault = new DiagramConnector()
+    {
+        TargetDecorator = new ConnectorTargetDecorator() { Shape = DecoratorShapes.None },
+        Type = Segments.Orthogonal,
+        Style = new ConnectorShapeStyle() { StrokeColor = "#6d6d6d" },
+        Constraints = 0,
+        CornerRadius = 5
+    };
+
+    DiagramNode NodeDefaults = new DiagramNode
+    {
+        Style = new NodeShapeStyle() { Fill = "#659be5", StrokeColor = "none", Color = "white", StrokeWidth = 2, },
+        BackgroundColor = "#659be5",
+        Shape = new DiagramShape() { Type = Syncfusion.Blazor.Diagrams.Shapes.Text, Margin = new BasicShapeMargin() { Left = 10, Right = 10, Bottom = 10, Top = 10 } },
+        ExpandIcon = new NodeExpandIcon()
+        {
+            Height = 10,
+            Width = 10,
+            Shape = IconShapes.None,
+            Fill = "lightgray",
+            Offset = new IconOffset() { X = 0.5, Y = 1 },
+            VerticalAlignment = VerticalAlignment.Auto,
+            Margin = new ExpandIconMargin() { Bottom = 0, Left = 0, Right = 0, Top = 0 }
+        },
+        CollapseIcon = new NodeCollapseIcon()
+        {
+            Offset = new IconOffset() { X = 0.5, Y = 1 },
+            VerticalAlignment = VerticalAlignment.Auto,
+            Height = 10,
+            Width = 10,
+            Shape = IconShapes.None,
+            Fill = "lightgray",
+            Padding = new IconPadding() { Top = 5 }
+        }
+
+    };
+
+    public class HierarchicalDetails
+    {
+        public string Name { get; set; }
+        public string FillColor { get; set; }
+        public string Category { get; set; }
+
+    }
+    public List<object> DataSource = new List<object>();
+
+
+    #endregion
+}
+
+
+

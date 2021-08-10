@@ -1,0 +1,174 @@
+﻿@inherits BaseWorkModal
+<div id="target">
+    <SfDialog @ref="ejsWinModal"
+              Locale="pt-BR"
+              Target="@Target"
+              Width="@Width"
+              IsModal="true"
+              Visible="@IsVisible"
+              ShowCloseIcon="true"
+              AllowDragging="false"
+              AnimationSettings="@dialogAnnimation">
+        <DialogTemplates>
+            <Header>
+                <span class='e-avatar template-image e-avatar-xsmall e-avatar-circle'></span>
+                <div id='template' title='content' class='e-icon-settings'>
+                    @Caption
+                   <div id='subtitle'>@SubTitle</div>
+                </div>
+               
+            </Header>
+            <Content>
+                @if(IsActive)
+                {   
+                  @ChildContent
+                }
+            </Content>
+        </DialogTemplates>
+        @if(Footer != null)
+        {
+            <div class="e-footer-content">
+                <div class="button-container">
+                    @Footer
+                </div>
+            </div>
+        }
+    </SfDialog>
+</div>
+<style>
+
+    #subtitle {
+         
+        font-size: 13px;
+        letter-spacing: 2px;
+        word-spacing: 2px;
+        color: #000000;
+        font-weight: 700;
+        text-decoration: none;
+        font-style: normal;
+        font-variant: normal;
+        text-transform: none;         
+        vertical-align: middle;
+       /* height: 40px;
+        line-height: 40px;*/
+    }
+    #sendButton {
+        top: 2px;
+        position: relative;
+    }
+
+    .e-footer-content .e-input-group {
+        width: 75%;
+        float: left;
+    }
+
+    .e-dialog .e-dlg-header-content {
+        background-color: #3f51b5;
+    }
+
+        .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn {
+            top: 5px;
+            left: -11px;
+        }
+
+    .e-dialog .e-dlg-header {
+        position: relative;
+    }
+
+    .e-dialog .e-footer-content, .highcontrast.e-bigger .e-dialog .e-footer-content {
+        padding: 15px;
+    }
+
+    .e-dialog .e-dlg-content {
+        padding: 15px;
+    }
+
+    .e-dialog .e-dlg-header-content {
+        padding: 6px;
+    }
+
+    .e-open-icon::before {
+        content: '\e782';
+    }
+
+    #template {
+        display: inline-block;
+        padding: 0px 10px;
+        vertical-align: middle;
+        height: 40px;
+        line-height: 20px;
+    }
+
+    input {
+        width: 75%;
+        float: left;
+    }
+
+    .e-icon-settings.e-icons {
+        float: left;
+        position: relative;
+        left: 14%;
+        top: -33px;
+    }
+
+    .dialogContent .dialogText {
+        font-size: 13px;
+        padding: 2%;
+        word-wrap: break-word;
+        border-radius: 6px;
+        text-align: justify;
+        font-style: initial;
+        display: block;
+    }
+
+    .e-dlg-header .e-icon-settings, .e-icon-btn {
+        color: #fff;
+    }
+
+    .dialogContent .dialogText, .dialogContent .dialogText {
+        /*background-color: #f5f5f5;*/
+    }
+
+    .e-dialog .e-footer-content, .fabric .e-dialog .e-footer-content {
+        border-top: 0.5px solid rgba(0, 0, 0, 0.42);
+    }
+
+    .dialogContent {
+        display: block;
+        font-size: 15px;
+        word-wrap: break-word;
+        text-align: center;
+        font-style: italic;
+        border-radius: 6px;
+        padding: 3%;
+        position: relative;
+        top: 5px;
+    }
+
+    /*.control-wrapper .e-control.e-dialog {
+        width: 30%;
+    }*/
+
+    .e-dialog .e-dlg-header-content .e-icon-dlg-close {
+        color: #fff;
+    }
+
+    .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn:hover,
+    .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn:focus {
+        background-color: rgba(255,255,255, 0.10);
+    }
+
+        .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn:active .e-icon-dlg-close,
+        .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn:focus .e-icon-dlg-close,
+        .e-dialog .e-dlg-header-content .e-btn.e-dlg-closeicon-btn:hover .e-icon-dlg-close {
+            color: #fff;
+        }
+
+    .e-dialog .e-dlg-header-content .e-dlg-header .e-avatar.template-image {
+        background-image: url("common/images/action_edit.png");
+        vertical-align: middle;
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+    }
+</style>

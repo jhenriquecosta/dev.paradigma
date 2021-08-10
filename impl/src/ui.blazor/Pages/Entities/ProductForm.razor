@@ -1,0 +1,132 @@
+﻿@page "/entities/products"
+@using Works.ConsoleApp.Reports
+@using Works.Reports.DevReports
+@using Works.Dependency
+
+@inherits WorksPageCrudComponentBase<Product, ProductDto>
+<Field>
+    <FieldBody>
+        <SfButton @onclick="@OnBuildComp" CssClass="e-btn e-info" IconCss="mdi mdi-database-minus mdi-18px">REPORTS</SfButton>
+    </FieldBody>
+</Field>
+<WorksContainer IsInitialized="@IsInitialized">
+
+    <WorksPanel Title="@Title" SubTitle="@SubTitle">
+
+        <WorksGrid @ref="DataListGrid"
+                   TModel="ProductDto"
+                   AllowButtons="true"
+                   AllowPrint="true"
+                   DataSource="@PageModelList"
+                   OnAdd="@(() => this.OnPageModelAction(null, WorksPageModelAction.New))"
+                   OnEdit="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Edit))"
+                   OnRemove="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Delete))" />
+
+    </WorksPanel>
+
+</WorksContainer>
+
+
+<WorksModalForm @ref="ModalFormMain" Width="700px"
+                Caption="@GetCaption()"
+                OnDelete="@(() => OnDeleteAsync(this.PageModelInput))"
+                OnSave="@(() => OnSaveOrUpdateAsync(this.PageModelInput))">
+
+    <BodyContent>
+
+        <Fields>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksInputText @bind-Value="@PageModelInput.Name" Caption="Cidade"></WorksInputText>
+            </Field>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksInputText @bind-Value="@PageModelInput.Description" Caption="Uf"></WorksInputText>
+            </Field>
+        </Fields>
+
+        <Fields>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksComboBox TEntity="Category"
+                               Caption="Category"
+                               Value="@PageModelInput.Category?.Id"
+                               ValueChanged="@((value) => PageModelInput.Category = value.MapTo<CategoryDto>())" />
+            </Field>
+            
+             
+            <Field>
+                <WorksInputMoney  @bind-Value="@PageModelInput.Price" Caption="Price"></WorksInputMoney>
+            </Field>
+        </Fields>
+        <Fields>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksInputNumeric TValue="long" Format="000.000.000-00" @bind-Value="@PageModelInput.BarCode" Caption="BAR CODE"></WorksInputNumeric>
+            </Field>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <Works.Pages.Controls.WorksCpfCnpj  @bind-Value="@PageModelInput.BarCode"  Caption="CPF" ></Works.Pages.Controls.WorksCpfCnpj>
+            </Field>
+        </Fields>
+        <Fields>
+            <Field>
+                 <WorksGridEdit TEntity="CategoryDto" PageModelList="@Categories" Fields="Name" OnUpdate="@((value) => GetValues(value))" ></WorksGridEdit>
+            </Field>
+        </Fields>
+
+
+
+        
+
+
+    </BodyContent>
+</WorksModalForm>
+
+
+
+@code
+{
+
+    protected List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+    [Inject] WorksComponentsService ComponentsService { get; set; }
+    protected void GetValues(List<CategoryDto> lista)
+    {
+        var data = lista;
+    }
+    protected async Task OnBuildComp()
+    {
+        //OwningComponentBase
+       // var cmpService = IocManager.Instance.Resolve<WorksComponentsService>();
+       // await cmpService.HasRenderAsync();
+        await ComponentsService.InfoAsync("oi");
+
+
+    }
+
+    // [Inject] protected ReportStorageWebExtension WorksReport { get; set; }
+    //protected async Task OnBuildReport()
+    //{
+    //    try
+    //    {
+    //        var records = await worksPageRef.DataListGrid.InternalControl.GetFilteredRecords();
+    //        var dataList = worksPageRef.PageModelList.ToList().OrderBy(f => f.Category?.Name).ToList();
+    //        ReportViewer.ViewerAsync<ProductDto>(new ProductReport(), dataList);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await InfoAsync(ex.Message);
+    //    }
+    //    // XtraReport newXtraReport = new ProductReport();
+    //    // WorksReports<ProductDto>.SetData(dataList);
+    //    //// newXtraReport.DataSourceFrom(dataList);
+
+    //    // newXtraReport.Name = "NewReport";
+    //    // WorksReport.SetNewData(newXtraReport, newXtraReport.Name);
+    //    // var byteReport = WorksReport.GetData(newXtraReport.Name);
+    //    // var streamReport = WorksFile.ToStream(byteReport);
+    //    // var xtraReport = XtraReport.FromStream(streamReport);
+    //    // newXtraReport = xtraReport;
+    //    // await newXtraReport.CreateDocumentAsync();
+    //    // NavManager.NavigateTo($"/documentviewer/{newXtraReport.Name}");
+
+    //}
+}
+
+
+

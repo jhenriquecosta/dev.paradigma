@@ -1,0 +1,133 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager UriHelper;
+@inject IJSRuntime JsRuntime;
+@inject HttpClient Http;
+@inject WorksApplicationState Service;
+
+<WorksToasts Timeout="200"></WorksToasts>
+
+<CascadingValue Value="@this">
+
+    <MainPanel @ref="PanelMainObj">
+
+        <HeaderPanel OnToggleClick="@OnToggleClick" OnRightToggleClick="@OnRightToggleClick"></HeaderPanel>
+
+        <PanelContent>
+
+            <PanelLeft @ref="PanelLeftObj"></PanelLeft>
+
+            <PanelRight Body="@Body" @ref="PanelRightObj"></PanelRight>
+
+            <PanelMobile @ref="PanelMobileObj"></PanelMobile>
+
+        </PanelContent>
+
+    </MainPanel>
+
+</CascadingValue>
+
+
+@code
+{
+    [Inject] SyncfusionBlazorService SyncfusionService { get; set; }
+    public MainPanel PanelMainObj { get; set; }
+    public PanelLeft PanelLeftObj { get; set; }
+    public PanelRight PanelRightObj { get; set; }
+    public PanelMobile PanelMobileObj { get; set; }
+
+    private void OnToggleClick()
+    {
+        var isOpen = this.PanelLeftObj.SideBar.IsOpen;
+        this.PanelLeftObj.SideBar.IsOpen = !isOpen;
+        JsRuntime.InvokeAsync<string>("callResizeEvent");
+    }
+
+    public void OnRightToggleClick()
+    {
+
+        JsRuntime.InvokeAsync<Object>("mobileSideBarVisibility");
+        this.PanelMobileObj.MobilePreferences.Toggle();
+        JsRuntime.InvokeAsync<Object>("mobileThemePersist");
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        //if (UriHelper.Uri.IndexOf("material") > 0)
+        //{
+        //    JsRuntime.Sf().EnableRipple(true);
+        //}
+        //else
+        //{
+        //    JsRuntime.Sf().EnableRipple(false);
+        //}
+        if (this.PanelMainObj.SpinnerObj.TransClass == null || this.PanelMainObj.SpinnerObj.TransClass == "sb-trans")
+        {
+            this.PanelMainObj.SpinnerObj.Hide();
+            this.Service.Prop.HideSpinner = false;
+            this.Service.Prop.RestricMouseEvents = false;
+        }
+
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+#if ServerSideBlazor
+
+        //this.JsRuntime.Sf().LoadLocaleData("wwwroot/locale/pt.json")
+        //    .LoadCldrData("wwwroot/locale/cldr-data/main/pt/numbers.json",
+        //    "wwwroot/locale/cldr-data/main/pt/timeZoneNames.json",
+        //    "wwwroot/locale/cldr-data/main/pt/ca-gregorian.json",
+        //    "wwwroot/locale/cldr-data/main/pt/currencies.json",
+        //    "wwwroot/locale/cldr-data/supplemental/numberingSystems.json")
+        //    .SetCulture("pt").SetCurrencyCode("BRL");
+#endif
+#if ClientSideBlazor
+
+        this.JsRuntime.Sf().LoadLocaleData(await Http.GetJsonAsync<object>("locale/pt.json")).SetCulture("pt").SetCurrencyCode("BRL")
+                           .LoadCldrData(await Http.GetJsonAsync<object>("locale/cldr-data/main/pt/timeZoneNames.json"), 
+                           await Http.GetJsonAsync<object>("locale/cldr-data/main/pt/numbers.json"), 
+                           await Http.GetJsonAsync<object>("locale/cldr-data/main/pt/currencies.json"), 
+                           await Http.GetJsonAsync<object>("locale/cldr-data/supplemental/numberingSystems.json"), 
+                           await Http.GetJsonAsync<object>("locale/cldr-data/main/pt/ca-gregorian.json"));
+#endif
+
+        Service.Notify += OnNotify;
+        if (UriHelper.Uri.IndexOf("material") > 0)
+        {
+            SyncfusionService.EnableRipple();
+        }
+
+    }
+    protected override bool ShouldRender()
+    {
+        return true;
+    }
+    public async Task OnNotify(NotifyProperties prop)
+    {
+        await InvokeAsync(() =>
+        {
+            this.PanelMainObj.SpinnerObj.Hide();
+            this.Service.Prop.HideSpinner = false;
+            this.Service.Prop.RestricMouseEvents = false;
+
+        });
+    }
+
+
+    public void Dispose()
+    {
+        Service.Notify -= OnNotify;
+    }
+
+
+
+
+
+
+
+}

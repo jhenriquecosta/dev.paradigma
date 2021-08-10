@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    
+   
+    <RootNamespace>Works.Paradigma.Ui</RootNamespace>
+    <AssemblyName>Works.Paradigma.Ui.Razor</AssemblyName>
+    <Nullable>disable</Nullable>
+    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Shared\UrnaLayout.razor" />
+  </ItemGroup>
+
+ 
+
+  <!--<ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.6" />
+  </ItemGroup>-->
+
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\works.framework\impl\src\ui.blazor\Works.Ui.Blazor.csproj" />
+    <ProjectReference Include="..\application\Works.Paradigma.Application.csproj" />
+  </ItemGroup>
+
+</Project>

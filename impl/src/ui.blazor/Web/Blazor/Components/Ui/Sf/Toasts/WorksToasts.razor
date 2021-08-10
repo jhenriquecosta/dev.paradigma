@@ -1,0 +1,20 @@
+﻿@inherits BaseWorkToasts
+@if (ToastList.Any())
+{
+    <div class="ox-toast-container @PositionClass">
+        <CascadingValue Value=this>
+            @foreach (var toast in ToastList.OrderBy(x => x.TimeStamp))
+            {
+                <WorksToast ToastSettings="toast.ToastSettings" ToastId="toast.Id" />
+            }
+        </CascadingValue>
+    </div>
+}
+<style>
+    .ox-toast-container {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        z-index: 1;
+    }
+</style>

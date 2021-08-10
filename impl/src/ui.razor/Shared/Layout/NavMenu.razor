@@ -1,0 +1,89 @@
+﻿
+@implements IDisposable;
+
+@inject NavigationManager UriHelper;
+@inject AppBlazorService AppBlazorService;
+
+<CascadingValue Value="@this">
+
+
+
+    <SfMenu @ref="MenuRef" TValue="ApplicationMenuItem" Items="@MenuItemList" HamburgerMode="@HamburguerMode" ShowItemOnClick="true">
+        <MenuFieldSettings ItemId="Id" Children="SubMenu" IconCss="IconCss" Text="Text"></MenuFieldSettings>
+        <MenuAnimationSettings Effect="MenuEffect.FadeIn" Duration="400"></MenuAnimationSettings>
+        <MenuEvents TValue="ApplicationMenuItem" ItemSelected="@((item) => OnApplicationSelection(item))"></MenuEvents>
+    </SfMenu>
+</CascadingValue>
+@code
+{
+    private bool isCurrentComponent { get; set; }
+    protected bool HamburguerMode { get; set; } = false;
+    protected SfMenu<ApplicationMenuItem> MenuRef { get; set; }
+    protected List<ApplicationMenuItem> MenuItemList { get; set; }
+    protected ApplicationStructure ApplicationSelected { get; set; }
+
+    [CascadingParameter]
+    protected AppMainLayout Layout { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Gets the menu datasource.
+
+        BuildApplicationMenu();
+    }
+    protected void BuildApplicationMenu()
+    {
+
+        
+        MenuItemList = AppBlazorMenuBrowser.ApplicationMenuItemList;
+
+    }
+
+     
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        
+        AppBlazorService.MetaData?.Refresh();
+    }
+
+    
+
+    private void OnApplicationSelection(Syncfusion.Blazor.Navigations.MenuEventArgs<ApplicationMenuItem> args)
+    {
+        if (!args.Item.IsComponent) return;
+
+        var currentUrl = args.Item.ComponentUrl.ToLower();
+        this.isCurrentComponent = true;
+        Layout.CollapseSideBar();
+        //  BreadcrumbUpdate(args.Item);
+        this.NavigatePage(currentUrl);
+
+    }
+     
+
+
+    // Handles query param and navigate to the Url.
+    private void NavigatePage(string url)
+    {
+        if (UriHelper.Uri.IndexOf("?") >= 0 && url.IndexOf("?") < 0)
+        {
+            string[] themeurl = UriHelper.Uri.Split("?");
+            url += themeurl.Length > 0 ? "?" + themeurl[themeurl.Length - 1] : string.Empty;
+        }
+        else if (url.IndexOf("?") < 0)
+        {
+            url += "?theme=material";
+        }
+        UriHelper.NavigateTo(url);
+    }
+     
+
+
+    public void Dispose()
+    {
+        MenuItemList = null;
+    }
+}

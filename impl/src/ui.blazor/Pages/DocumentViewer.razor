@@ -1,0 +1,11 @@
+﻿@page "/documentviewer/"
+@page "/documentviewer/{UrlReport}"
+
+<DxDocumentViewer @ref="@documentViewer"  ReportName="@UrlReport" Height="1000px" Width="100%">
+    <DxDocumentViewerTabPanelSettings Width="180" />
+</DxDocumentViewer>
+@code
+{
+    DxDocumentViewer documentViewer;
+    [Parameter] public string UrlReport { get; set; }
+}

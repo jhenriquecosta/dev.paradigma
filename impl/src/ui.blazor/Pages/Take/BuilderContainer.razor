@@ -1,0 +1,183 @@
+﻿@page "/take/buildcontext"
+@inherits WorksPageComponent
+@using Works.Helpers 
+@using Works.Helpers.Dto 
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq
+
+@using Syncfusion.Blazor.Diagrams
+@using Syncfusion.Blazor.Navigations
+@using System.Collections.ObjectModel
+@using DiagramShapes = Syncfusion.Blazor.Diagrams.Shapes
+@using DiagramSegments = Syncfusion.Blazor.Diagrams.Segments
+@using ContextMenuItemModel = Syncfusion.Blazor.Diagrams.ContextMenuItemModel  
+
+    <Fields>
+        <Field>
+            <SfDiagram @ref="@diagramRef" 
+                       Height="900px"
+                       Nodes="@NodeCollection"
+                       Connectors="@ConnectorCollection"
+                       NodeDefaults="@NodeDefaults"
+                       ConnectorDefaults="@ConnectorDefaults">
+                <DiagramPageSettings>
+                    <DiagramFitOptions CanFit="true" Mode="FitModes.Page"></DiagramFitOptions>
+                </DiagramPageSettings>
+
+                <DiagramSnapSettings>
+                    <HorizontalGridlines LineColor="#e0e0e0 " LineIntervals="@GridLineIntervals">
+                    </HorizontalGridlines>
+                    <VerticalGridlines LineColor="#e0e0e0" LineIntervals="@GridLineIntervals">
+                    </VerticalGridlines>
+                </DiagramSnapSettings>
+
+                
+                <DiagramEvents ContextMenuItemClicked="@OnActionMenuItemClicked" OnContextMenuOpen="@OnContextMenuOpen"></DiagramEvents>
+                <DiagramContextMenuSettings Show="true" Items="@contextMenuItemModels" ShowCustomMenuOnly="true" />
+            </SfDiagram>
+        </Field>       
+    </Fields>    
+
+    <BlipFlowActionComponent @ref="BlipFlowActionComponentRef" PageModelList="@ExecuteScriptSettingsDtoList"></BlipFlowActionComponent>
+
+@code
+{
+    List<ContextMenuItemModel> contextMenuItemModels = new List<ContextMenuItemModel>();
+
+
+    SfDiagram diagramRef;
+    BlipDiagram _blipDiagram;
+    string _lastItemSelected = string.Empty;
+
+    public NameValueApplication<BlipSettings> outputActionApplication = new NameValueApplication<BlipSettings>();
+
+    public List<BlipExecuteScriptSettingsDto> ExecuteScriptSettingsDtoList { get; set; } = new List<BlipExecuteScriptSettingsDto>();
+    public BlipFlowActionComponent BlipFlowActionComponentRef { get; set; }
+    public ObservableCollection<NodeConnect> NodeConnects { get; set; }
+    // Defines diagram's nodes collection
+    public ObservableCollection<DiagramNode> NodeCollection { get; set; }
+    // Defines diagram's connector collection
+    public ObservableCollection<DiagramConnector> ConnectorCollection { get; set; }
+    // Defines default values for DiagramNode object
+    public DiagramNode NodeDefaults { get; set; }
+    // Defines default values for DiagramConnector object
+    public DiagramConnector ConnectorDefaults { get; set; }
+    // Defines interval values for GridLines
+    public double[] GridLineIntervals { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        InitDiagramModel();
+
+    }
+    private void InitDiagramModel()
+    {
+        InitDiagramDefaults();
+
+        GridLineIntervals = new double[] {
+            1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75
+        };
+
+        NodeCollection = new ObservableCollection<DiagramNode>();
+        ConnectorCollection = new ObservableCollection<DiagramConnector>();
+        NodeConnects = new ObservableCollection<NodeConnect>();
+        Initialize();
+
+
+    }
+    private void InitDiagramDefaults()
+    {
+
+        NodeDefaults = new DiagramNode()
+        {
+            Width = 145,
+            Height = 60,
+            Annotations = new ObservableCollection<DiagramNodeAnnotation>() { },
+            Style = new NodeShapeStyle() { Fill = "#357BD2", StrokeColor = "white" }
+        };
+
+        ConnectorDefaults = new DiagramConnector()
+        {
+            Type = DiagramSegments.Orthogonal,
+            TargetDecorator = new ConnectorTargetDecorator() { Shape = DecoratorShapes.Arrow, Width = 10, Height = 10 }
+        };
+    }
+    private void Initialize()
+    {
+        var usiminas = "usiminas.atend.prod.json";
+        var take = "take.bot.default.json";
+        var hal = "take.hal3.json";
+
+        var file = $"D:\\src\\databases\\json\\{hal}";
+        _blipDiagram = BuilderDiagramHelper.GetBlipFlow(file);
+
+        NodeCollection = _blipDiagram.NodeCollection;
+        ConnectorCollection = _blipDiagram.ConnectorCollection;
+
+    }
+
+    public void OnActionMenuItemClicked(DiagramMenuEventArgs arg)
+    {
+        //Action to be performed
+
+        var selected = arg.Item.Id;
+        if (selected.Equals(FlowConsts.Flow.OutputAction.ExecuteScript))
+        {
+            WorksIDGenerator.Instance.ResetId();
+            var blip = _blipDiagram.Flow.Settings.Flow.States.SingleOrDefault(f => f.Id.Equals(_lastItemSelected));
+            var inputActions = blip.InputActions;
+            var outputActions = blip.OutputActions;
+
+            outputActions.Where(f => f.Type.Equals(FlowConsts.Flow.OutputAction.ExecuteScript)).ToList().ForEach(item =>
+            {
+
+
+                ExecuteScriptSettingsDtoList.Add(new BlipExecuteScriptSettingsDto()
+                {
+                    Id = (int)WorksIDGenerator.Instance.NextId,
+                    Source = item.Settings?.Source,
+                    Function = item.Settings?.Function,
+                    InputVariables = item.Settings?.InputVariables,
+                    OutputVariable = item.Settings?.OutputVariable
+                });
+            });
+            BlipFlowActionComponentRef.Show();
+        }
+        StateHasChanged();
+
+    }
+
+
+    public void OnContextMenuOpen(DiagramBeforeMenuOpenEventArgs arg)
+    {
+
+        var selectedItems = diagramRef.SelectedItems;
+        _lastItemSelected = selectedItems.Nodes.FirstOrDefault() ?.Id ;
+
+        var menu = new ContextMenuItemModel()
+        {
+            Text = "Actions",
+            Id = "Node",
+            Target = ".e-elementcontent",
+        };
+
+
+        var menuItems = new List<ContextMenuItemModel>();
+        var menuItem = new ContextMenuItemModel()
+        {
+            Text = "Execute Scripts",
+            Id = FlowConsts.Flow.OutputAction.ExecuteScript,
+
+
+            Target = ".e-elementcontent",
+        };
+        menuItems.Add(menuItem);
+        menu.Items = menuItems;
+
+        contextMenuItemModels.Clear();
+        contextMenuItemModels.Add(menu);
+        arg.Items = contextMenuItemModels;
+
+    }
+}

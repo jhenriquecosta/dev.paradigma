@@ -1,0 +1,51 @@
+﻿@using Works.Web.Common.Icons
+@page "/webs/controls/inputedit"
+@inject WorksComponentsService WorksCmpService 
+@inherits WorksPage
+
+
+<WorksPanel Title="WORKSINPUT " SubTitle="Text edit">
+
+    <Fields>
+        <Field ColumnSize="ColumnSize.IsHalf">
+            <WorksInputInteger Caption="Id" @bind-Value="@ProductDto.Id"></WorksInputInteger>
+        </Field>
+        <Field ColumnSize="ColumnSize.IsHalf">
+            <WorksInputMoney Caption="Price" @bind-Value="@ProductDto.Price"></WorksInputMoney>
+        </Field>
+    </Fields>
+    <Fields>
+        <Field ColumnSize="ColumnSize.IsHalf">
+            <WorksInputNumeric TValue="int" Caption="Id" @bind-Value="@ProductDto.Id"></WorksInputNumeric>
+        </Field>
+        <Field ColumnSize="ColumnSize.IsHalf">
+            <WorksInputNumeric TValue="decimal" Format="N2" Caption="Price" @bind-Value="@ProductDto.Price"></WorksInputNumeric>
+        </Field>
+    </Fields>
+
+    <Fields>
+
+        "Id   :" @ProductDto.Id
+        "Price:" @ProductDto.Price
+
+    </Fields>
+</WorksPanel>
+
+@code
+{
+
+    public ProductTests ProductDto { get; set; } = new ProductTests();
+
+
+
+    public class ProductTests
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+    }
+
+}
+
+
+

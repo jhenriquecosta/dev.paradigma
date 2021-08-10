@@ -1,0 +1,43 @@
+﻿@inject IJSRuntime JsRuntime;
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+<SfSidebar ID="left-sidebar" @ref="SideBar" EnableGestures="false" Target=".sb-content"  Width="300px" MediaQuery="(min-width:600px)">
+    <ChildContent>
+        <div class='sb-left-pane e-view'>
+
+            <div class="sb-left-pane-header">
+                <div class="sb-header-top">
+                    <div class="sb-ej2">
+                        <div class="sb-mobile-logo"></div>
+                        <div class="sb-name">ORION Tecnologias</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='sb-control-navigation e-view'>
+                <MenuHamburguer @ref="MenuObject"></MenuHamburguer>
+            </div>
+
+            <div class='sb-left-footer'>
+                <div class="sb-mobile-header-buttons">
+                </div>
+                <div class='sb-left-footer-links'>
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+</SfSidebar>
+
+
+@code {
+
+    public SfSidebar SideBar { get; set; }
+
+    public MenuHamburguer MenuObject { get; set; }
+
+    private void HomeButtonClick()
+    {
+        JsRuntime.InvokeAsync<string>("homeButtonClick");
+        //UriHelper.NavigateTo("/");
+
+    }
+}

@@ -1,0 +1,80 @@
+﻿@page "/webs/controls/inplaceedit"
+@inherits WorksPage
+
+
+
+
+@*<WorksPanel Title="WORKS IN PLACE" SubTitle="Listagem">
+        <Field>
+
+            <WorksInputInPlace Caption="Text Edit" Value="@TextValue" />
+        </Field>
+        <Field>
+            <WorksInputInPlace Caption="Mask Edit" Format="000-000-000" Value="@MaskValue" />
+        </Field>
+        <Field>
+            <WorksInputInPlace Caption="Numeric Edit" Value="@NumericValue" />
+        </Field>
+        <Field>
+            <WorksInputInPlace Caption="Date Edit" Value="@DateValue" />
+        </Field>
+    </WorksPanel>*@
+
+<SfDashboardLayout ShowGridLines="true" AllowFloating="true" AllowResizing="true" CellSpacing="@CellSpacing" Columns="@Columns">
+        <DashboardLayoutPanels>
+
+            <DashboardLayoutPanel  Row="1" Col="0" SizeX="2" SizeY="2">
+                <HeaderTemplate><div>Panel 2</div></HeaderTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel  Row="1" Col="2" SizeX="2" SizeY="2">
+                <HeaderTemplate><div>Panel 3</div></HeaderTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel  Row="1" Col="4" SizeX="2" SizeY="2">
+                <HeaderTemplate><div>Panel 4</div></HeaderTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel  Row="0" Col="0" SizeX="6" SizeY="4">
+                <HeaderTemplate><div>Panel 1</div></HeaderTemplate>
+            </DashboardLayoutPanel>
+        </DashboardLayoutPanels>
+    </SfDashboardLayout>
+
+<style>
+    .e-panel-header {
+        background-color: rgba(0, 0, 0, .1);
+        text-align: center;
+    }
+
+    .e-panel-content {
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+@code
+{
+
+    SfDashboardLayout dashboardObject;
+    public double[] CellSpacing = { 10, 10 };
+    public int Columns = 6;
+    public int Count = 6;
+    public int Length { get; set; }
+
+
+    public DateTime DateValue { get; set; } = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+    public DateTime DateTimeValue { get; set; } = DateTime.Now;
+    public DateTime[] DateRangeValue { get; set; } = new DateTime[] { DateTime.Now, DateTime.Now.AddDays(20) };
+    public DateTime TimeValue { get; set; } = DateTime.Now;
+
+    public string MaskValue = "123-345-678";
+    public decimal NumericValue = 10.0m;
+    public string TextValue = "Andrew";
+    public string DropValue = "Android";
+    public string AutocompValue = "Android";
+    public string ColorValue = "#81aefd";
+    public string ComboBoxValue = "Android";
+    public string[] MultiValue = new string[] { "Android" };
+    public string RteValue = "<p>Enter your content here</p>";
+    public double SliderValue = 20;
+
+
+}
+

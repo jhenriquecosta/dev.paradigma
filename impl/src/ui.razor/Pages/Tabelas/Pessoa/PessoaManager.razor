@@ -1,0 +1,85 @@
+﻿@page "/pessoa/manager"
+@inject ILoadingService LoadIndicatorService
+@inherits WorksFormsDataBindBase<Pessoa>
+
+
+<Indicator IndicatorContext="on-init">
+    <ErrorContent Context="t">
+        <p>Error: @t.Exception.Message</p>
+        <button class="btn btn-primary" @onclick="@t.DismissException">Dismiss</button>
+    </ErrorContent>
+    <ChildContent>
+        <WorksPanel Title="@Title" SubTitle="@SubTitle">
+
+            <WorksGrid @ref="DataListGrid"
+                       TModel="Pessoa"
+                       AllowButtons="true"
+                       AllowPrint="true"
+                       DataSource="@PageModelList"
+                       OnAdd="@(() => this.OnPageModelAction(null, WorksPageModelAction.New))"
+                       OnEdit="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Edit))"
+                       OnRemove="@((value) => this.OnPageModelAction(value, WorksPageModelAction.Delete))" />
+
+        </WorksPanel>
+    </ChildContent>
+</Indicator>
+
+<WorksModalForm @ref="ModalFormMain"  Caption="@GetCaption()" OnDelete="@(() => OnDeleteAsync(this.PageModelInput))" OnSave="@(() => OnSaveOrUpdateAsync(this.PageModelInput))">
+    <BodyContent>
+        <Fields>          
+            <Field >
+                <WorksInputText Caption="Nome" @bind-Value="@PageModelInput.Nome"></WorksInputText>
+            </Field>
+        </Fields>
+        <Fields>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksComboBox TEntity="Departamento"
+                               Caption="Departamento"
+                               Value="@PageModelInput.Departamento?.Id"
+                               ValueChanged="@((value) => PageModelInput.Departamento = value)" />
+            </Field>
+            <Field ColumnSize="ColumnSize.IsHalf.OnDesktop">
+                <WorksInputNumeric Caption="Salário" TValue="decimal" Format="n2" @bind-Value="PageModelInput.Salario" />
+            </Field>
+        </Fields>
+    </BodyContent>
+</WorksModalForm>
+
+@code
+{
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await InitializeAsync();
+        await base.OnInitializedAsync();
+    }
+    protected async Task InitializeAsync()
+    {
+
+        await LoadIndicatorService.StartTaskAsync(async (task) =>
+        {
+            try
+            {
+                Title = "PESSOAS";
+                SubTitle = "Manutenção";
+                IndicatorContext = "on-init";
+                IndicatorService = LoadIndicatorService;
+                await Task.Delay(1);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }, "on-init", "Requisitando informações ao servidor...", "Aguarde..");
+
+    }
+
+
+
+}
+
+
+

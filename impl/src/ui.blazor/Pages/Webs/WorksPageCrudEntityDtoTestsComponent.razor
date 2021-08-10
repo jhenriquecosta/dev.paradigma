@@ -1,0 +1,28 @@
+﻿@page "/webs/workspagecomponententitydto"
+@inherits WorksPageCrudComponent<Person,PersonDto>
+<WorksContainer IsInitialized="@IsInitialized">
+
+    <WorksPanel Title="Pessoa" SubTitle="Listagem">
+        @GridComponent
+    </WorksPanel>
+
+</WorksContainer>
+
+<WorksModalForm @ref="@ModalFormMain"
+                Caption="@GetCaption"
+                Operation="@PageModelAction"
+                OnDelete="@(() => OnDeleteAsync(this.PageModelInput))"
+                OnSave="@(() => OnSaveOrUpdateAsync(this.PageModelInput))">
+    
+    @*<Fields>
+        <WorksFieldText TValue="string" @bind-Value="@PageModelInput.Name" Caption="Nome"></WorksFieldText>   
+    </Fields>*@
+</WorksModalForm>
+
+@code
+{
+
+}
+
+
+

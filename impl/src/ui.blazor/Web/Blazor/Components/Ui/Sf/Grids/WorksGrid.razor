@@ -1,0 +1,81 @@
+﻿@typeparam TModel
+@using SelectionMode = Syncfusion.Blazor.Grids.SelectionMode
+@inherits BaseWorkGrid<TModel>
+<WorksValidation ErrorMessages="@ErrorMessages" />
+
+           
+            @if (AllowButtons)
+            {
+                <Fields>
+                    <Field>
+                        <FieldBody>
+                            <SfButton @onclick="@(() => OnAdd.InvokeAsync(null))" IsPrimary="ButtonAddIsPrimaryKey" IconCss="mdi mdi-database-plus mdi-18px">ADD</SfButton>
+                            <SfButton @onclick="@(() => OnEdit.InvokeAsync(CurrentModel))" IconCss="mdi mdi-database-edit mdi-18px">EDIT</SfButton>
+                            <SfButton @onclick="@(() => OnRemove.InvokeAsync(CurrentModel))" CssClass="e-btn e-warning" IconCss="mdi mdi-database-minus mdi-18px">DELETE</SfButton>
+                            @if (AllowButtonReport)
+                            {
+                                <SfButton @onclick="@(() => OnPrint.InvokeAsync(null))" IconCss="mdi mdi-cloud-print-outline mdi-18px">RELATÓRIO</SfButton>
+                            }
+                        </FieldBody>
+                    </Field>
+                </Fields>
+            }
+
+        <Fields>
+
+            @if (DataSource != null)
+            {
+            <SfGrid @ref="SfGridView"
+                    Width="100%"
+                    Locale="@Locale"
+                    Height="@Height"
+                    Toolbar=@Tool
+                    TValue="TModel"
+                    DataSource="@DataSource" 
+                    AllowResizing="@AllowResize"
+                    AllowSelection="true"
+                    AllowFiltering="@AllowFilter"
+                    AllowGrouping="@AllowGroup" 
+                    AllowPaging="@AllowPage">
+                   <GridEditSettings
+                        AllowAdding="false"
+                        AllowEditing="false"
+                        AllowDeleting="false">
+                  </GridEditSettings>
+                <GridEvents TValue="TModel"
+                            OnActionBegin="@((args) => ActionBegin(args))"
+                            CommandClicked="@((args) => OnCommandClicked(args))"
+                            RowSelected="@((e) => OnRowSelect(e))">
+                </GridEvents>
+                @if (@AllowGroup)
+                {
+                    <GridGroupSettings Columns="@GroupColumns"></GridGroupSettings>
+                }
+
+                <GridSelectionSettings Mode="SelectionMode.Row" Type="Syncfusion.Blazor.Grids.SelectionType.Single"></GridSelectionSettings>
+                <GridPageSettings PageCount="5" PageSize="10"></GridPageSettings>
+                <GridColumns>
+                    @{
+
+                        foreach (var column in GetColumnsFromModel)
+                        {
+
+                            <GridColumn Field="@column.Field"
+                                        HeaderText="@column.Caption"
+                                        Format="@column.Format"
+                                        Width="@column.Width.ToString()"
+                                        Type="@column.Type"
+                                        IsPrimaryKey="@column.IsPrimaryKey"
+                                        AllowEditing="@column.AllowEditing"
+                                        AutoFit="@column.AllowResizing"
+                                        TextAlign="@column.TextAlign"
+                                        DisplayAsCheckBox="@column.IsCheckBox">
+                            </GridColumn>
+                        }
+                    }
+                    @GridCommand
+                </GridColumns>
+            </SfGrid>
+            }
+        </Fields>
+    

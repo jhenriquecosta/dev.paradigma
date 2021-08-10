@@ -1,0 +1,54 @@
+﻿@inject IJSRuntime JsRuntime
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+
+<SfSidebar ID="right-sidebar" @ref="MobilePreferences" EnableGestures="false" Position="@Position" Type="@Type">
+    <ChildContent>
+        <div class="sb-left-pane-header">
+            <div class="sb-setting-header">Preferences</div>
+        </div>
+        <div class="sb-setting-item sb-setting-theme-section">
+            <div class="sb-icons sb-setting-icons sb-icon-Palette"></div>
+            <div class="sb-setting-text">Theme Selection</div>
+            @*<SfDropDownList ID="mobileTheme" TValue="string" TItem="typeData" PopupWidth="180px" DataSource="@data">
+                <DropDownListEvents ValueChange="ThemeChange" TItem="typeData" TValue="string"></DropDownListEvents>
+                <DropDownListFieldSettings Text="text" Value="text"></DropDownListFieldSettings>
+            </SfDropDownList>*@
+        </div>
+
+    </ChildContent>
+</SfSidebar>
+<div class='sb-mobilefooter e-view sample-navigation' id='mobile-footer'>
+
+</div>
+
+
+
+@code
+{
+    public SfSidebar MobilePreferences { get; set; }
+
+    public SidebarPosition Position { get; set; } = SidebarPosition.Right;
+
+    public SidebarType Type { get; set; } = SidebarType.Push;
+
+    [Parameter]
+    public string theme { get; set; }
+
+    public class typeData
+    {
+        public string text { get; set; }
+    }
+    private List<typeData> data { get; set; } = new List<typeData> {
+        new typeData { text = "Material" },
+        new typeData { text = "Fabric" },
+        new typeData { text = "Bootstrap" },
+        new typeData { text = "High Contrast" },
+        new typeData { text = "Bootstrap V4" }
+    };
+
+    private void ThemeChange(Syncfusion.Blazor.DropDowns.ChangeEventArgs<string> args)
+    {
+        JsRuntime.InvokeAsync<string>("mobileThemeChange", args.Value.ToString());
+    }
+
+}

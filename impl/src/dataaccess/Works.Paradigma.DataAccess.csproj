@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Works.Paradigma.DataAccess</AssemblyName>
+    <RootNamespace>Works.Paradigma</RootNamespace>
+  
+   </PropertyGroup>
+
+  
+  <ItemGroup>
+    <Compile Remove="DataAccess\Mappings\Attachment\**" />
+    <EmbeddedResource Remove="DataAccess\Mappings\Attachment\**" />
+    <None Remove="DataAccess\Mappings\Attachment\**" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <Folder Include="DataAccess\Mappings\" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\works.framework\impl\src\dataaccess.fluentnhibernate\Works.FluentNHibernate.csproj" />
+    <ProjectReference Include="..\domain\Works.Paradigma.Domain.csproj" />
+  </ItemGroup>
+
+  
+</Project>

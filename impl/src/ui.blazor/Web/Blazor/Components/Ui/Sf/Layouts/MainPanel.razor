@@ -1,0 +1,13 @@
+﻿<Spinner @ref="SpinnerObj"></Spinner>
+<div class="sample-browser e-view sf-new">
+    <div class="sb-mobile-overlay sb-hide"></div>
+    @ChildContent
+</div>
+
+@code
+{
+    public Spinner SpinnerObj { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+}

@@ -1,0 +1,27 @@
+﻿
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="@AdditionalAssemblies">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(AppMainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(AppMainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code
+{
+    protected IEnumerable<Assembly> AdditionalAssemblies { get; set; }
+    [Inject] HttpClient _httpClient { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _httpClient.BaseAddress = new Uri(_navigationManager.BaseUri);
+        AdditionalAssemblies = AppBlazorSettings.GetAssemblies();
+
+    }
+}

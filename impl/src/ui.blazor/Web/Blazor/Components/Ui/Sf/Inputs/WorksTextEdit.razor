@@ -1,0 +1,13 @@
+﻿@inherits BaseWorkTextEdit
+<SfTextBox OnChange="OnValueChanged"
+           OnBlur="OnBlurFired"
+           Locale="@Locale"
+           ShowClearButton="@ShowClearButton"
+           @ref="objEditText"
+           Readonly="@(!AllowEdit)"
+           CssClass="@CssClass"
+           @bind-Value="@Value"
+           Placeholder="@Caption"
+           Multiline="@Multiline"
+           FloatLabelType="@FloatLabel">
+</SfTextBox>

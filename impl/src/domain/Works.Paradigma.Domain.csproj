@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Works.Paradigma.Domain</AssemblyName>
+    <RootNamespace>Works.Paradigma</RootNamespace>
+   
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <Compile Remove="Domain\Entities\Examples\**" />
+    <EmbeddedResource Remove="Domain\Entities\Examples\**" />
+    <None Remove="Domain\Entities\Examples\**" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\works.framework\impl\src\tools.automapper\Works.AutoMapper.csproj" />
+    <ProjectReference Include="..\core\Works.Paradigma.Core.csproj" />
+  </ItemGroup>
+  
+
+</Project>

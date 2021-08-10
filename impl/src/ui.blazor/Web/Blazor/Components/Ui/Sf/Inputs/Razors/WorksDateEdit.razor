@@ -1,0 +1,14 @@
+﻿
+@typeparam TValue
+@inherits WorkBaseDateEdit<TValue>
+    <SfDatePicker @bind-Value="@Value"
+                  @ref="objDateEdit"
+                  OnBlur="OnBlurFired"
+                  Locale="@Locale"
+                  ShowClearButton="@ShowClearButton"
+                  Readonly="@(!AllowEdit)"
+                  CssClass="@CssClass"
+                  Placeholder="@Caption"
+                  FloatLabelType="@FloatLabel">
+                  <DatePickerEvents TValue="TValue" ValueChange="OnValueChange"></DatePickerEvents>
+    </SfDatePicker>

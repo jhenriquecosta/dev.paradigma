@@ -1,0 +1,62 @@
+﻿@inherits WorksSfComponentBase
+    <WorksModal @ref="@InternalWorksModal" Width="@Width" SubTitle="@SubTitle" Caption="@Caption">
+        <ChildContent>
+            <WorksForm @ref="@InternalWorksForm"
+                       PageModelAction="@Operation"
+                       OnResetClick="@OnResetClick"
+                       OnDeleteClick="@OnDelete"
+                       OnSaveClick="@OnSave">
+                       <ChildContent>
+                            <Container Padding="Padding.Is0.OnAll">
+                                @BodyContent
+                            </Container>
+                       </ChildContent>                    
+            </WorksForm>
+        </ChildContent>
+    </WorksModal>
+@code
+{
+    protected WorksModal InternalWorksModal { get; set; }
+    protected WorksForm InternalWorksForm { get; set; }
+
+    //  [Parameter] public new string Width { get; set; } = "700px";
+    [Parameter] public RenderFragment BodyContent { get; set; }
+    [Parameter] public string SubTitle { get; set; } = "Informe os dados corretamente";
+    [Parameter] public WorksPageModelAction Operation { get; set; }
+    [Parameter] public System.Action OnReset { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback<bool> OnVisible { get; set; }
+
+    public void SetCaption(string caption)
+    {
+        this.InternalWorksModal.Caption = caption;
+
+    }
+    public void Show(WorksPageModelAction modelAction)
+    {
+        this.Operation = modelAction;
+        this.Show();
+    }
+    public void Show()
+    {
+        OnVisible.InvokeAsync(true);
+        this.InternalWorksModal.Show();
+    }
+    public void Hide()
+    {
+        OnVisible.InvokeAsync(false);
+        this.InternalWorksModal.Hide();
+    }
+    protected void OnResetClick()
+    {
+        if (OnReset == null) this.Hide();
+        else OnReset?.Invoke();
+    }
+    public bool IsVisible => InternalWorksModal.IsVisible;
+
+    public void OnChange()
+    {
+        InternalWorksModal.ShouldRenderize();
+    }
+}

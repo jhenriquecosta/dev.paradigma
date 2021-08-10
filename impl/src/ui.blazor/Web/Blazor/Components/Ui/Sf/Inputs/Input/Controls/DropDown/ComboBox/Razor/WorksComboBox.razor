@@ -1,0 +1,25 @@
+﻿@using Works.Web.Blazor.Ui.Sf.Inputs 
+@typeparam TEntity
+@inherits BaseWorkComboBox<TEntity>
+
+<WorksValidation ErrorMessages="@ErrorMessages" />
+
+@if (DataSource != null)
+{
+    <SfDropDownList
+         @ref="@InternalComboBox"
+         Placeholder="@Caption"
+         Value="@InternalValue"
+         DataSource="@DataSource"
+         Readonly="@(!AllowEdit)"
+         AllowFiltering="@AllowFiltering"
+         IgnoreAccent="@IgnoreAccent"
+         CssClass="@CssClass"
+         Locale="@Locale"
+         Enabled="@Enabled"
+         ShowClearButton="@ShowClearButton"
+         FloatLabelType="@FloatLabel">
+        <DropDownListEvents TValue="int?" ValueChange="OnValueChanged"></DropDownListEvents>
+        <DropDownListFieldSettings Text="@FieldText" Value="@FieldValue"></DropDownListFieldSettings>
+    </SfDropDownList>
+}

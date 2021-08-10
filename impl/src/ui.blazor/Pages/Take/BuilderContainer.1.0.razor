@@ -1,0 +1,384 @@
+﻿ 
+@inherits WorksPageComponent
+@using Works.Helpers 
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq
+
+@using Syncfusion.Blazor.Diagrams
+@using Syncfusion.Blazor.Navigations
+@using System.Collections.ObjectModel
+@using DiagramShapes = Syncfusion.Blazor.Diagrams.Shapes
+@using DiagramSegments = Syncfusion.Blazor.Diagrams.Segments
+
+
+    <Fields>
+        <Field>
+            <SfDiagram   Height="900px" 
+                       Nodes="@NodeCollection"
+                       Connectors="@ConnectorCollection"
+                       NodeDefaults="@NodeDefaults"
+                       ConnectorDefaults="@ConnectorDefaults">
+                <DiagramPageSettings>
+                    <DiagramFitOptions CanFit="true" Mode="FitModes.Page"></DiagramFitOptions>
+                </DiagramPageSettings>
+
+                <DiagramSnapSettings>
+                    <HorizontalGridlines LineColor="#e0e0e0 " LineIntervals="@GridLineIntervals">
+                    </HorizontalGridlines>
+                    <VerticalGridlines LineColor="#e0e0e0" LineIntervals="@GridLineIntervals">
+                    </VerticalGridlines>
+                </DiagramSnapSettings>
+            </SfDiagram>
+        </Field>       
+    </Fields>    
+ 
+
+@code
+{
+    int connectorCount = 0;
+    int portCount = 0;
+
+    int posX = 300;
+    int posY = 0;
+
+    int lastPosX = 0;
+    int lastPosY = 0;
+    int initPosY = 0;
+    int initPosX = 300;
+    public ObservableCollection<NodeConnect> NodeConnects { get; set; }
+    // Defines diagram's nodes collection
+    public ObservableCollection<DiagramNode> NodeCollection { get; set; }
+    // Defines diagram's connector collection
+    public ObservableCollection<DiagramConnector> ConnectorCollection { get; set; }
+    // Defines default values for DiagramNode object
+    public DiagramNode NodeDefaults { get; set; }
+    // Defines default values for DiagramConnector object
+    public DiagramConnector ConnectorDefaults { get; set; }
+    // Defines interval values for GridLines
+    public double[] GridLineIntervals { get; set; }
+
+    protected override void OnInitialized()
+    {
+        InitDiagramModel();
+
+    }
+    private void InitDiagramModel()
+    {
+        InitDiagramDefaults();
+
+        GridLineIntervals = new double[] {
+            1, 9, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75, 0.25, 9.75
+        };
+
+        NodeCollection = new ObservableCollection<DiagramNode>();
+        ConnectorCollection = new ObservableCollection<DiagramConnector>();
+        NodeConnects = new ObservableCollection<NodeConnect>();
+        Initialize();
+
+    }
+    private void InitDiagramDefaults()
+    {
+
+        NodeDefaults = new DiagramNode()
+        {
+            Width = 145,
+            Height = 60,
+            Annotations = new ObservableCollection<DiagramNodeAnnotation>() { },
+            Style = new NodeShapeStyle() { Fill = "#357BD2", StrokeColor = "white" }
+        };
+
+        ConnectorDefaults = new DiagramConnector()
+        {
+            Type = DiagramSegments.Orthogonal,
+            TargetDecorator = new ConnectorTargetDecorator() { Shape = DecoratorShapes.Arrow, Width = 10, Height = 10 }
+        };
+    }
+    private void Initialize()
+    {
+        var usiminas = "usiminas.atend.prod.json";
+        var hal = "take.hal3.json";
+        var file = $"D:\\src\\databases\\json\\{hal}";
+        var jsonData = GetData(file);
+
+        var states = jsonData["settings"]["flow"]["states"];
+        foreach (var state in states)
+        {
+            var id = state["id"].ToString();
+            var root = state["root"]?.ToString();
+            Console.WriteLine($"state {id} root ? {root}");
+
+            var annotation = state["name"].ToString();
+            var stateName = annotation;
+
+            var flowShape = FlowShapes.Process;
+            lastPosX = posX;
+            if (id.Equals("onboarding"))
+            {
+                flowShape = FlowShapes.Terminator;
+            }
+            if (id.Equals("fallback"))
+            {
+                flowShape = FlowShapes.Terminator;
+                posX = initPosX + 300;
+                posY = initPosY;
+            }
+
+
+            var outputs = state["outputs"];
+
+            var decision = "decision_" + annotation;
+            var decisions = new Dictionary<string, string>();
+            //ObservableCollection<DiagramPort> defaultsPorts = new ObservableCollection<DiagramPort>();
+            var idKey = 0;
+            foreach (var action in outputs)
+            {
+                var stateId = action["stateId"].ToString();
+                var stateKey = $"{stateId}_{++idKey}";
+                annotation = string.Empty;
+                if (action["conditions"] != null)
+                {
+                    var conditions = action["conditions"].ToObject<JArray>().FirstOrDefault();
+                    annotation = GetComparison(conditions);
+                }
+                decisions.Add(stateKey, annotation);
+
+            }
+
+            var ancestralNode = CreateNode(id, posX, posY += 80, flowShape, stateName);
+
+            flowShape = FlowShapes.Decision;
+            var key = $"{id}_decision";
+
+            var childNode = CreateNode(key, posX, posY += 80, flowShape, decision);
+            // NodeConnects.Add(new NodeConnect() { Source = id, Target = key });
+            CreateConnector(id, key);
+
+            foreach (var item in decisions)
+            {
+                //Console.WriteLine($"{item.Key.ToString()}=>{item.Value}");
+                annotation = item.Value.ToString();
+                var itemkey = item.Key.Split("_")[0];
+                CreateConnector(key, itemkey, annotation);
+                //NodeConnects.Add(new NodeConnect() { Source = key, Target = item.Key.ToString(),Label = annotation });
+            }
+            posX = lastPosX;
+        }
+        //AddConnections();
+
+    }
+    public void AddConnections()
+    {
+
+        foreach (var node in NodeConnects)
+        {
+            double? portX = 0.01d;
+            double? portY = 0.5d;
+
+            var sourceNode = NodeCollection.SingleOrDefault(f => f.Id == node.Source);
+            var targetNode = NodeCollection.SingleOrDefault(f => f.Id == node.Target);
+            //sourceNode.ConnectTo(targetNode,portX,portY)
+            var sourceNodePorts = sourceNode.Ports.LastOrDefault();
+            var targetNodePorts = sourceNode.Ports.LastOrDefault();
+
+            if (sourceNodePorts != null)
+            {
+                // portX = sourceNodePorts.Offset.X + 0.25d;
+                //  portY = sourceNodePorts.Offset.Y + 0.5d;
+            }
+
+            var sourcePort = AddPort(sourceNode, CreatePort(portX, portY));
+            if (targetNodePorts != null)
+            {
+                // portX = targetNodePorts.Offset.X + 0.25d;
+                //   portY = targetNodePorts.Offset.Y + 0.5d;
+            }
+            var targetPort = AddPort(targetNode, CreatePort(portX, portY));
+
+            AddConnector(sourceNode.Id, targetNode.Id, sourcePort, targetPort, node.Label);
+            NodeCollection.Remove(sourceNode);
+            NodeCollection.Remove(targetNode);
+            NodeCollection.Add(sourceNode);
+            NodeCollection.Add(targetNode);
+
+        }
+    }
+
+    private DiagramConnector AddConnector(string sourceId, string targetId, string sourcePortId,string targetPortId, string label = default(string), Syncfusion.Blazor.Diagrams.DiagramConnectorSegment segment = null, bool isDashLine = false)
+    {
+        DiagramConnector diagramConnector = new DiagramConnector()
+        {
+            Id = string.Format("connector{0}", ++connectorCount),
+            SourceID = sourceId,
+            TargetID = targetId,
+            SourcePortID = sourcePortId,
+            TargetPortID = targetPortId,
+            Type = Syncfusion.Blazor.Diagrams.Segments.Orthogonal,
+        };
+
+        if (label != default(string))
+        {
+            var annotation = new DiagramConnectorAnnotation()
+            {
+                Content = label,
+                Style = new AnnotationStyle() { Fill = "white" }
+            };
+            diagramConnector.Annotations = new ObservableCollection<DiagramConnectorAnnotation>() { annotation };
+        }
+
+        if (segment != null)
+        {
+            diagramConnector.Segments = new ObservableCollection<Syncfusion.Blazor.Diagrams.DiagramConnectorSegment>() { segment };
+        }
+        if (targetId.Equals("fallback")) isDashLine = true;
+
+        if (isDashLine)
+        {
+            diagramConnector.Style = new ConnectorShapeStyle() { StrokeDashArray = "2,2", StrokeColor = "#ec2f0d" };
+        }
+
+        ConnectorCollection.Add(diagramConnector);
+        return diagramConnector;
+    }
+    private string AddPort(DiagramNode node,DiagramPort port)
+    {
+        node.Ports.Add(port);
+        return port.Id;
+    }
+    private string GetComparison(JToken condition)
+    {
+        var conditionSource = condition["source"].ToString();
+        var conditionOperator = condition["comparison"].ToString();
+        var conditionValue = condition["values"].ToObject<JArray>().FirstOrDefault();
+        var result = $"{conditionSource}{GetOperator(conditionOperator)}{conditionValue}";
+        return result;
+
+
+    }
+    private string GetOperator(string op)
+    {
+        if (op.Equals("equals")) return "=";
+        if (op.Equals("lessThanOrEquals")) return ">=";
+        else return op;
+    }
+
+
+    private DiagramNode CreateNode(string id, double x, double y, FlowShapes shape, string label, bool positionLabel = false)
+    {
+        ObservableCollection<DiagramPort> defaultsPorts = new ObservableCollection<DiagramPort>();
+        if (shape == FlowShapes.Decision)
+        {
+            defaultsPorts.Add(CreatePort(0.01, 0.5));
+            defaultsPorts.Add(CreatePort(0.5, 0.01));
+            defaultsPorts.Add(CreatePort(0.5, 1));
+            defaultsPorts.Add(CreatePort(1, 0.5));
+        }
+        else
+        {
+            defaultsPorts.Add(CreatePort(0.01, 0.5));
+            defaultsPorts.Add(CreatePort(1,0.5));
+            defaultsPorts.Add(CreatePort(0.25, 1));
+            defaultsPorts.Add(CreatePort(0.5, 1));
+            defaultsPorts.Add(CreatePort(0.75, 1));
+        }
+
+
+        DiagramNodeAnnotation annotation = new DiagramNodeAnnotation()
+        {
+            Content = label,
+            Style = new AnnotationStyle()
+            {
+                Color = "white",
+                Fill = "transparent"
+            }
+        };
+        if (positionLabel)
+        {
+            annotation.Margin = new NodeAnnotationMargin() { Left = 25, Right = 25 };
+        };
+
+        DiagramNode diagramNode = new DiagramNode()
+        {
+            Id = id,
+            OffsetX = x,
+            OffsetY = y,
+            Ports = defaultsPorts,
+            Shape = new DiagramShape() { Type = Syncfusion.Blazor.Diagrams.Shapes.Flow, FlowShape = shape },
+            Annotations = new ObservableCollection<DiagramNodeAnnotation>() { annotation }
+        };
+
+        NodeCollection.Add(diagramNode);
+        return diagramNode;
+    }
+    private DiagramConnector CreateConnector(string sourceId, string targetId, string label = default(string), Syncfusion.Blazor.Diagrams.DiagramConnectorSegment segment = null, bool isDashLine = false)
+    {
+        DiagramConnector diagramConnector = new DiagramConnector()
+        {
+            Id = string.Format("connector{0}", ++connectorCount),
+            SourceID = sourceId,
+            TargetID = targetId,
+            //  Type = Syncfusion.Blazor.Diagrams.Segments.Orthogonal,
+        };
+
+        if (label != default(string))
+        {
+            var annotation = new DiagramConnectorAnnotation()
+            {
+                Content = label,
+                Style = new AnnotationStyle() { Fill = "white" }
+            };
+            diagramConnector.Annotations = new ObservableCollection<DiagramConnectorAnnotation>() { annotation };
+        }
+
+        if (segment != null)
+        {
+            diagramConnector.Segments = new ObservableCollection<Syncfusion.Blazor.Diagrams.DiagramConnectorSegment>() { segment };
+        }
+        if (targetId.Equals("fallback")) isDashLine = true;
+
+
+
+
+        if (isDashLine)
+        {
+            diagramConnector.Style = new ConnectorShapeStyle() { StrokeDashArray = "2,2",  StrokeColor= "#ec2f0d" };
+        }
+        if (targetId.Equals("onboarding"))
+        {
+            diagramConnector.Style = new ConnectorShapeStyle() { StrokeDashArray = "3,3", StrokeColor = "#0d2bec" };
+        }
+
+
+        ConnectorCollection.Add(diagramConnector);
+        return diagramConnector;
+    }
+
+
+    private DiagramPort CreatePort(double? x, double? y)
+    {
+        return new DiagramPort()
+        {
+            Id = string.Format("port{0}", ++portCount),
+            Shape = PortShapes.Circle,
+            Offset = new NodePortOffset() { X = x, Y = y },
+            Width = 6,
+            Height = 6,
+            Visibility = PortVisibility.Visible,
+            Style = new PortShapeStyle() { Fill = "#366f8c", StrokeColor = "#366f8c" }
+        };
+    }
+    private JObject GetData(string file)
+    {
+        var jsonData = JsonConvert.DeserializeObject<JObject>(System.IO.File.ReadAllText(file));
+        //var items = jsonData.ToObject<List<JObject>>().OrderBy(f => f["Id"]).ToList();
+        return jsonData;
+    }
+
+    public class NodeConnect
+    {
+        public string Source { get; set; }
+        public string Target { get; set; }
+        public string Label { get; set; }
+    }
+
+
+}

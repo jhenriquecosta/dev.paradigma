@@ -1,0 +1,19 @@
+﻿@inherits BaseWorkToast
+
+    <SfToast @ref="SelfComponent"
+              Timeout="@Timeout"
+              Title="@ToastSettings.Heading"
+              Icon="@ToastSettings.IconClass"
+              CssClass="@ToastSettings.CssClass"
+              Content="@ToastSettings.Message"
+              ShowCloseButton="@ShowCloseBtn"
+              ShowProgressBar="@ShowProgressBtn"
+              NewestOnTop="@ShowNewestOnTop">
+
+        <ToastPosition X="Right" Y="Bottom"></ToastPosition>
+        <ToastEvents Created="OnCreated" ></ToastEvents>
+        <ToastAnimationSettings>
+            <ToastShowAnimationSettings Effect="@ShowEffect" Easing="@ShowEasing" Duration="@ShowDuration"></ToastShowAnimationSettings>
+            <ToastHideAnimationSettings Effect="@HideEffect" Easing="@HideEasing" Duration="@HideDuration"></ToastHideAnimationSettings>
+        </ToastAnimationSettings>
+    </SfToast>

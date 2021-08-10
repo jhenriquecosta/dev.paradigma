@@ -1,0 +1,78 @@
+﻿<div class='sb-right-pane e-view' id='right-pane'>
+    <Spinner HideClass="sb-hide"></Spinner>
+    <div class='sb-desktop-wrapper'>
+        <PanelBreadCrumb @ref="BreadCrumbObj"></PanelBreadCrumb>
+        <div class='sb-action-description sb-rightpane-padding'></div>
+
+        @*<div class="container-fluid">
+            <div id="control-content">
+                @Body
+            </div>
+        </div>*@
+    <div>
+        <div class="control-fluid">
+
+            <div id="control-content">
+                @Body
+            </div>
+
+        </div>
+    </div>
+       
+
+
+        <div class='description-section sb-rightpane-padding'>
+        </div>
+        <div class="sb-footer">
+            <div class="sb-footer-left">
+                <div class="sb-footer-links">
+
+                </div>
+                <div class="sb-footer-copyright">@CopyRight</div>
+            </div>
+            <div class="sb-footer-logo">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@code
+{
+
+    public string CopyRight { get; set; }
+    public PanelBreadCrumb BreadCrumbObj { get; set; }
+
+    [Parameter] public bool IsDisabled { get; set; } = true;
+    [Parameter] public bool IsLastDisabled { get; set; }
+    [Parameter] public RenderFragment Body { get; set; }
+    [CascadingParameter] public SfMainLayout BaseParent { get; set; }
+
+    public void UpdateBreadCrumb(string control, string category, string sample)
+    {
+        this.BreadCrumbObj.UpdatePath(control, category, sample);
+    }
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+
+    }
+
+    protected override void OnInitialized()
+    {
+        var year = DateTime.Now.ToString("yyyy");
+        this.CopyRight = "Copyright © 2020 - " + year + " Orion Sistemas LTDA.";
+    }
+
+    public void Dispose()
+    {
+
+
+    }
+
+}

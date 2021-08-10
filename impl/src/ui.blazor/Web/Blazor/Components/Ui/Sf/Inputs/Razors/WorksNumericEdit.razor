@@ -1,0 +1,19 @@
+﻿
+@typeparam TValue
+@inherits WorkBaseNumericEdit<TValue>
+
+<SfNumericTextBox  Value="@Value"
+                   @ref="objNumberEdit"
+                   TValue="TValue"
+                   Format="@Format"
+                   Decimals="@Decimals"
+                   ShowSpinButton="@ShowSpinButton"
+                   OnChange="OnValueChanged"
+                   OnBlur="OnBlurFired"
+                   Locale="@Locale"
+                   ShowClearButton="@ShowClearButton"
+                   Readonly="@(!AllowEdit)"
+                   CssClass="@CssClass"
+                   Placeholder="@Caption"
+                   FloatLabelType="@FloatLabel">
+</SfNumericTextBox>

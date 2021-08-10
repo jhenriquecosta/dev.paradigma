@@ -1,0 +1,79 @@
+﻿@typeparam TModel
+@inherits BaseWorkTreeGrid<TModel>
+    <WorksValidation ErrorMessages="@ErrorMessages" />
+
+
+
+@if (AllowButtons)
+{
+    <Fields>
+        <Field>
+            <FieldBody>
+                <SfButton @onclick="@(() => OnAdd.InvokeAsync(null))" IsPrimary="true" IconCss="mdi mdi-database-plus mdi-18px">ADD Raiz</SfButton>
+                <SfButton @onclick="@(() => OnAddItem.InvokeAsync(CurrentModel))" CssClass="e-btn e-info" IconCss="mdi mdi-database-plus mdi-18px">ADD Item</SfButton>
+                <SfButton @onclick="@(() => OnEdit.InvokeAsync(CurrentModel))" IconCss="mdi mdi-database-edit mdi-18px">EDIT Item</SfButton>
+                <SfButton @onclick="@(() => OnRemove.InvokeAsync(CurrentModel))" CssClass="e-btn e-warning" IconCss="mdi mdi-database-minus mdi-18px">DELETE</SfButton>
+                @if (AllowButtonReport)
+                {
+                    <SfButton @onclick="@(() => OnPrint.InvokeAsync(null))" IconCss="mdi mdi-cloud-print-outline mdi-18px">RELATÓRIO</SfButton>
+                }
+            </FieldBody>
+        </Field>
+    </Fields>
+}
+
+<Fields>
+
+@if (GetDataSource == null)
+{
+    <em>Loading...</em> 
+}
+else
+{
+
+
+<SfTreeGrid @ref="TreeGrid"
+             TValue="TModel"
+             DataSource="@DataSource"
+             IdMapping="@ColumnId"
+             ParentIdMapping="@ColumnParent"
+             TreeColumnIndex="@ColumnIndex"
+             AllowPaging="true"  
+             AllowFiltering="@AllowFilter"
+             Toolbar=@Tool>
+
+    @*<TreeGridSelectionSettings
+            Type="SelectionType.Single"Mode="Syncfusion.Blazor.Grids.SelectionMode.Row">
+        </TreeGridSelectionSettings>*@
+
+    <TreeGridEvents
+        TValue="TModel"
+        RowSelected="OnGetSelectedRow">
+    </TreeGridEvents>
+
+    @*PageSizes="@AllowPage"*@
+    <TreeGridPageSettings
+
+        PageCount="5"
+        PageSize="10">
+    </TreeGridPageSettings>
+
+    <TreeGridColumns>
+        @{
+
+            foreach (var column in GetColumnsFromModel)
+            {
+                Console.WriteLine(DataSource.Count());
+                <TreeGridColumn Field="@column.Field"
+                                HeaderText="@column.Caption"
+                                Type="@column.Type">
+                    @*IsPrimaryKey="@column.IsPrimaryKey"*@
+                    @*DisplayAsCheckBox="@column.IsCheckBox"*@
+                    @*Format="@column.Format"*@
+                </TreeGridColumn>
+            }
+        }
+    </TreeGridColumns>
+</SfTreeGrid>
+}
+</Fields>
